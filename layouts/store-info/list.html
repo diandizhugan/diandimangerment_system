@@ -1,10 +1,10 @@
 {{ define "main"}}
 <div class="div-default">
   <el-row >
-    <el-button type="primary" class="ml-2">添加门店</el-button>
+    <el-button type="primary" class="ml-2" @click="addVisible = true">添加门店</el-button>
     <el-button type="primary" class="ml-2">批量导入</el-button>
     <el-button type="primary" class="ml-2">批量导出</el-button>
-    <el-button type="danger" class="ml-2">批量删除</el-button>
+    <el-button type="danger" class="ml-2" :disabled="this.sels.length === 0" @click="delAllVisible = true">批量删除</el-button>
   </el-row>
 </div>
 
@@ -50,15 +50,88 @@
     <template slot-scope="scope">
       <template v-for="opt in scope.row.operations">
         <template v-if='"close" == opt'>
-          <el-button size="mini" type="danger" @click="closeRecord(scope.row.id)">关闭</el-button>
+          <el-button size="mini" type="danger" @click="closeRecord(scope.$index, scope.row)">关闭</el-button>
         </template>
         <template v-if='"modify" == opt'>
-          <el-button size="mini" type="success" @click="modifyRecord(scope.row.id)">修改</el-button>
+          <el-button size="mini" type="success" @click="modifyRecord(scope.$index, scope.row)">修改</el-button>
         </template>
       </template>
     </template>
   </el-table-column>
 </el-table>
+
+<!--  添加门店信息 -->
+<el-dialog :title="form.title" :visible.sync="addVisible" width="30%" >
+  <el-form :model="form" :rules="rules" ref="form">
+    <el-form-item label="门店名称" :label-width="formLabelWidth" prop="storename">
+      <el-input v-model="form.storename" autocomplete="off"></el-input>
+    </el-form-item>
+    <el-form-item label="门店地址" :label-width="formLabelWidth" prop="storeadd">
+      <el-input v-model="form.storeadd" autocomplete="off"></el-input>
+    </el-form-item>
+    <el-form-item label="公司选择" :label-width="formLabelWidth" prop="company">
+      <el-select v-model="form.company" placeholder="请选择门店所属公司" >
+        <el-option 
+        v-for="item in companies"
+        :key="item.id"
+        :label="item.name"
+        :value="item.id"></el-option>
+      </el-select>
+    </el-form-item>
+    <el-form-item label="保修截止日期" :label-width="formLabelWidth" prop="endingtime">
+      <el-date-picker type="date" placeholder="选择日期" v-model="form.endingtime" style="width: 100%;"></el-date-picker>
+    </el-form-item>
+  </el-form>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="addVisible = false">取消</el-button>
+    <el-button type="danger" @click="submitForm('form')">确认[[form.active]]</el-button>
+  </span>
+</el-dialog>
+
+<!--  批量删除 -->
+<el-dialog title="批量删除提示" :visible.sync="delAllVisible" width="30%" >
+  <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="delAllVisible = false">取消</el-button>
+    <el-button type="danger" >确认删除</el-button>
+  </span>
+</el-dialog>
+
+<!--    单行关闭  -->
+<el-dialog title="删除提示" :visible.sync="closeVisible" width="40%" >
+  <el-form :data="closeForm" label-width="100px" >
+    <el-row >
+      <el-col :span="12">
+        <el-form-item label="门店编号" prop="storeid">
+          [[closeForm.storeid]]
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="门店名称" prop="storename" >
+          [[closeForm.storename]]
+        </el-form-item>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="12">
+        <el-form-item label="所属公司" prop="company" >
+          [[closeForm.company]]
+        </el-form-item>        
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="保修截止日期" prop="endingtime" >
+          [[closeForm.endingtime]]
+        </el-form-item>  
+      </el-col>
+    </el-row>
+  </el-form>
+  <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="repairVisible = false">取消</el-button>
+    <el-button type="danger" >确认提交</el-button>
+  </span>
+</el-dialog>
+
 </div>
 {{ end}}
 
@@ -78,6 +151,39 @@
             companyids: [],
             options: [],
           },
+          sels:[],
+          //添加按钮弹出框
+          addVisible:false,
+          form: {
+            title:"添加门店",
+            active:"添加",
+            storename: '',
+            storeadd: '',
+            endingtime: '',
+            company: ''
+          },
+          rules:{
+            storename:[
+              {required:true,message:"请填写门店名称",trigger:"blur"},
+            ],
+            storeadd:[
+              {required:true,message:"请填写门店地址",trigger:"blur"}
+            ],
+            company: [
+              {required: true, message: '请至少选择一个负责公司', trigger: 'change' }
+            ],
+            endingtime:[
+              {required: true, message: "请选择保修截止日期", type: "date",trigger:"change"}
+            ]
+          },
+          //批量删除对话框弹出
+          delAllVisible:false,
+          //单行关闭对话框弹出
+          closeVisible:false,
+          //设置form用于进行添加的时候绑定值
+          closeForm:{},
+          modifyForm:{},
+          currentIndex:[],
           formLabelWidth: '120px',
         }, {
           "stores": ret.stores,
@@ -123,7 +229,8 @@
               }
             } 
           },
-          handleSelectionChange() {
+          handleSelectionChange(sels) {
+            this.sels = sels ,
             console.log()
           },
           filterStatus(value, row) {
@@ -131,7 +238,34 @@
           },
           filterRecord(value) {
 
-          }
+          },
+          //验证是否能能成功提交对话框
+          submitForm(formName){
+            this.$refs[formName].validate((valid) => {
+              if (valid) {
+                alert('submit!');
+              } else {
+                console.log('error submit!!');
+                return false;
+              }
+            });
+          },
+          // 增加数据的方式,将这些值增加到单行删除按钮对话框中
+          closeRecord(index , row){
+          //将表格中的数据传递到对话框
+            this.closeForm = this.tableData[index];
+            this.currentIndex = index;
+            this.closeVisible = true;
+          },
+          // 增加数据的方式,将这些值增加到单行修改按钮对话框中
+          modifyRecord(index , row){
+            //将表格中的数据传递到对话框
+              this.form = this.tableData[index];
+              this.currentIndex = index;
+              this.addVisible = true;
+              this.form.title = "修改信息";
+              this.form.active = "修改";
+          },
         }
       })
     })

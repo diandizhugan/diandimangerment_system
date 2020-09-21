@@ -4,7 +4,7 @@
     <el-button type="primary" class="ml-2" @click="addVisible = true">添加人员</el-button>
     <el-button type="primary" class="ml-2" >批量导入</el-button>
     <el-button type="primary" class="ml-2">批量导出</el-button>
-    <el-button type="danger" class="ml-2" @click="delAllVisible = true">批量删除</el-button>
+    <el-button type="danger" class="ml-2" :disabled="this.sels.length === 0" @click="delAllVisible = true">批量删除</el-button>
   </el-row>
 </div>
 
@@ -102,7 +102,7 @@
   </el-form>
   <span slot="footer" class="dialog-footer">
     <el-button @click="addVisible = false">取消</el-button>
-    <el-button type="danger" @click="submitForm('form')">确认添加</el-button>
+    <el-button type="danger" @click="submitForm('form')">确认[[form.active]]</el-button>
   </span>
 </el-dialog>
 
@@ -142,7 +142,7 @@
 </el-dialog>
 
 </div>
-</div>
+
 {{ end}}
 
 {{define "main_script"}}
@@ -162,10 +162,12 @@
             options: [],
             powers:[],
           },
+          sels:[],
           //添加按钮弹出框
           addVisible:false,
           form: {
             title:"添加人员",
+            active:"添加",
             name: '',
             weichat: '',
             tel: '',
@@ -241,7 +243,8 @@
               }
             } 
           },
-          handleSelectionChange() {
+          handleSelectionChange(sels) {
+            this.sels = sels ,
             console.log()
           },
           filterStatus(value, row) {
@@ -261,20 +264,21 @@
               }
             });
           },
-          // 增加数据的方式,将这些值增加到维修按钮对话框中
+          // 增加数据的方式,将这些值增加到单行删除按钮对话框中
           closeRecord(index , row){
           //将表格中的数据传递到对话框
             this.closeForm = this.tableData[index];
             this.currentIndex = index;
             this.closeVisible = true;
           },
-          // 增加数据的方式,将这些值增加到维修按钮对话框中
+          // 增加数据的方式,将这些值增加到单行修改按钮对话框中
           modifyRecord(index , row){
           //将表格中的数据传递到对话框
             this.form = this.tableData[index];
             this.currentIndex = index;
             this.addVisible = true;
             this.form.title = "修改信息";
+            this.form.active = "修改";
           },
         }
       })
