@@ -1,0 +1,20 @@
+add(){
+  this.repairForm = {
+    storename: "",
+    inserttime:"",
+    content:{
+      personname:[],
+      contactway:[],
+      content:[],
+      address:[],
+      pic:[],
+    },
+    detail:""
+  };
+  // 点击按钮后显示对话框
+  this.repairVisible = true;
+},
+update(){
+  this.tableData.push(this.repairForm);
+  this.repairVisible = false;
+},

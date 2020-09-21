@@ -1,0 +1,139 @@
+{{ define "main"}}
+<div class="div-default">
+  <el-row >
+    <el-button type="primary" class="ml-2">添加门店</el-button>
+    <el-button type="primary" class="ml-2">批量导入</el-button>
+    <el-button type="primary" class="ml-2">批量导出</el-button>
+    <el-button type="danger" class="ml-2">批量删除</el-button>
+  </el-row>
+</div>
+
+<div class="div-default ml-2">
+  <el-row type="flex">
+    筛选
+    <el-select v-model="filterform.companyids" filterable placeholder="请选择公司" multiple size="small" class="ml-2">
+      <el-option
+        v-for="item in companies"
+        :key="item.id"
+        :label="item.name"
+        :value="item.id">
+      </el-option>
+    </el-select>
+  </el-row>
+  <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%"
+  @selection-change="handleSelectionChange" height="500">
+  <el-table-column type="selection" width="55">
+  </el-table-column>
+  <el-table-column prop="storeid" label="门店编号" width="200" sortable>
+  </el-table-column>
+  <el-table-column prop="storename" label="门店名称" width="200">
+  </el-table-column>
+  <el-table-column prop="storeadd" label="门店地址" width="200">
+  </el-table-column>
+  <el-table-column prop="company" label="所属公司" width="120">
+  </el-table-column>
+  <el-table-column label="保修截止日期" show-overflow-tooltip sortable>
+    <template slot-scope="scope">[[ scope.row.endingtime ]]</template>
+  </el-table-column>
+  <el-table-column prop="endingday" label="剩余天数" width="120" sortable>
+  </el-table-column>
+  <el-table-column label="添加日期" show-overflow-tooltip sortable>
+    <template slot-scope="scope">[[ scope.row.inserttime ]]</template>
+  </el-table-column>
+  <el-table-column label="修改日期" show-overflow-tooltip sortable>
+    <template slot-scope="scope">[[ scope.row.modifytime ]]</template>
+  </el-table-column>
+  <el-table-column prop="status_cn" label="当前状态" width="120" sortable :filters="statustags" :filter-method="filterStatus"
+    filter-placement="bottom-end">
+  </el-table-column>
+  <el-table-column label="操作" width="160">
+    <template slot-scope="scope">
+      <template v-for="opt in scope.row.operations">
+        <template v-if='"close" == opt'>
+          <el-button size="mini" type="danger" @click="closeRecord(scope.row.id)">关闭</el-button>
+        </template>
+        <template v-if='"modify" == opt'>
+          <el-button size="mini" type="success" @click="modifyRecord(scope.row.id)">修改</el-button>
+        </template>
+      </template>
+    </template>
+  </el-table-column>
+</el-table>
+</div>
+{{ end}}
+
+{{define "main_script"}}
+<script>
+  $.getJSON("http://localhost:3000/api/v1/stores")
+    .then((ret) => {
+      new Vue({
+        el: "#app",
+        delimiters: ['[[', ']]'],
+        data: Object.assign({
+          websocketDisconnected: false,
+          stores: [],
+          statustags: [],
+          companies: [],
+          filterform: {
+            companyids: [],
+            options: [],
+          },
+          formLabelWidth: '120px',
+        }, {
+          "stores": ret.stores,
+          "companies": ret.companies,
+          "statustags": ret.status
+        }),
+        computed: {
+          tableData() {
+            let stores = this.stores.map(r => {
+              return Object.assign(r, this.storeConvert(r))
+            })
+
+            if (this.filterform.companyids.length <= 0) {
+              return stores;
+            }
+            stores = this.stores.filter(r => {
+            //  return this.filterform.storeids.some(s => r.storeid.includes(s));
+            for(var i = 0 ; i < this.filterform.companyids.length ; i++){
+              if ( this.filterform.companyids[i] == r.companyid) {
+                return r
+              }
+            }
+            });
+            return stores;
+          }
+        },
+        methods: {
+          storeConvert(store) {
+            if (store.status == 1) {
+              return {
+                order: 1,
+                status_cn: "施工中"
+              }
+            } else if (store.status == 2) {
+              return {
+                order: 2,
+                status_cn: "保修中"
+              }
+            } else if (store.status == 3) {
+              return {
+                order: 3,
+                status_cn: "出保中"
+              }
+            } 
+          },
+          handleSelectionChange() {
+            console.log()
+          },
+          filterStatus(value, row) {
+            return row.status === value
+          },
+          filterRecord(value) {
+
+          }
+        }
+      })
+    })
+</script>
+{{ end }}

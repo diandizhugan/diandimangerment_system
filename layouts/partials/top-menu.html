@@ -1,0 +1,42 @@
+<div id="top-menu">
+  <el-menu
+    :default-active="activeIndex2"
+    class="el-menu-demo"
+    mode="horizontal"
+    @select="handleSelect"
+    background-color="#545c64"
+    text-color="#fff"
+    active-text-color="#ffd04b">
+    <el-menu-item index="1"><img class="img-fluid" src="{{ .Site.Params.logo | absURL }}" alt="{{ .Site.Title }}"></el-menu-item>
+    <el-menu-item index="/">首页</el-menu-item>
+    {{ range .Site.Menus.main }}
+    {{ if .HasChildren }}
+    <el-submenu index="{{ .URL }}">
+      <template slot="title">{{ .Name }}</template>
+      {{ range .Children}}
+      <el-menu-item index="{{ .URL }}"> {{ .Name }}</el-menu-item>
+      {{ end }}
+    </el-submenu>
+    {{ else }}
+    <el-menu-item index="{{ .URL }}" >{{ .Name }}</el-menu-item>
+    {{ end }}
+    {{ end }}
+  </el-menu>
+
+</div>
+<script>
+var a = {{ .Page.RelPermalink }};
+new Vue({
+  el: "#top-menu",
+  delimiters: ['[[',']]'],
+  data: {
+    activeIndex2: a
+  },
+  methods: {
+    handleSelect(key, keyPath) {
+      console.log(key, keyPath);
+      window.location.replace (keyPath); 
+    }
+  }
+})
+</script>

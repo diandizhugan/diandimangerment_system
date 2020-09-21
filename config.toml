@@ -1,0 +1,48 @@
+baseURL = "http://example.org/"
+languageidentifier = "en-us"
+title = "点滴智能管理平台"
+
+#################### default parameters ################################
+[params]
+logo = "images/logo.png"
+home = "首页"
+jsonURL = "http://localhost:3000"
+
+
+############################## navigation ###############################
+# main menu
+[[menu.main]]
+name = "保修记录"
+URL = "/record/"
+weight = 1
+
+
+[[menu.main]]
+name = "客户信息"
+weight = 2
+hasChildren = true
+
+  [[menu.main]]
+  parent = "客户信息"
+  name = "公司信息"
+  URL = "/company-info/"
+  
+
+  [[menu.main]]
+  parent = "客户信息"
+  name = "门店信息"
+  URL = "/store-info/"
+ 
+
+  [[menu.main]]
+  parent = "客户信息"
+  name = "人员信息"
+  URL = "/person-info/"
+  
+
+[[menu.main]]
+weight = 3
+name = "系统信息"
+URL = "/system-info/"
+
+
