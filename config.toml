@@ -21,6 +21,7 @@ weight = 1
 name = "客户信息"
 weight = 2
 hasChildren = true
+URL = "/client"
 
   [[menu.main]]
   parent = "客户信息"
@@ -43,6 +44,17 @@ hasChildren = true
 [[menu.main]]
 weight = 3
 name = "系统信息"
+hasChildren = true
 URL = "/system-info/"
+
+  [[menu.main]]
+  parent = "系统信息"
+  name = "员工信息"
+  URL = "/worker-info/"
+
+  [[menu.main]]
+  parent = "系统信息"
+  name = "角色信息"
+  URL = "/job-info/"
 
 

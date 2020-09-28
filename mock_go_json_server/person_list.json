@@ -1,0 +1,86 @@
+{
+  "success": "ok",
+  "persons": [{
+    "personid": "WR001",
+    "personname": "周军",
+    "weichat": "43192256",
+    "mobilephone": "13200005786",
+    "email": "dank@dddd.com",
+    "job": "电工",
+    "company": "威尔士",
+    "companyid": "20001",
+    "inserttime": "2020-08-20 12:10:00",
+    "modifytime": "2020-09-10 08:12:00",
+    "powers":["提交报修","撤销报修","确认维修成果"],
+    "status": 1,
+    "operations": ["close","modify"] 
+  },{
+    "personid": "CCT001",
+    "personname": "王二",
+    "weichat": "33041582977",
+    "mobilephone": "13200005786",
+    "email": "dank@dddd.com",
+    "job": "电路设计",
+    "company": "常春藤学校",
+    "companyid": "20002",
+    "inserttime": "2020-08-20 12:10:00",
+    "modifytime": "2020-09-01 08:12:00",
+    "powers":["提交报修","撤销报修","确认维修成果"],
+    "status": 2,
+    "operations": ["close","modify"] 
+  },{
+    "personid": "WL001",
+    "personname": "陈三",
+    "weichat": "152268554782",
+    "mobilephone": "13200005786",
+    "email": "dank@dddd.com",
+    "job": "项目经理",
+    "company": "万丽酒店",
+    "companyid": "20003",
+    "inserttime": "2020-08-20 12:10:00",
+    "modifytime": "2020-09-08 08:12:00",
+    "powers":["提交报修","撤销报修","确认维修成果"],
+    "status": 3,
+    "operations": ["close","modify"] 
+  }
+],
+"companies": [{
+  "id": 20001,
+  "name": "威尔士",
+  "company": "威尔士"
+},
+{
+  "id": 20002,
+  "name": "常春藤",
+  "company": "常春藤学校"
+},
+{
+  "id": 20003,
+  "name": "万丽酒店",
+  "company": "万丽酒店"
+}
+],
+  "status": [{
+    "value": 1,
+    "text": "离岗中"
+  },
+  {
+    "value": 2,
+    "text": "在岗中"
+  },
+  {
+    "value": 3,
+    "text": "离职中"
+  }
+],
+  "powers":[{
+    "powerid": "submit",
+    "name": "提交报修"  
+  },{
+    "powerid": "cancel",
+    "name": "取消报修" 
+  },{
+    "powerid": "confirm",
+    "name": "确认报修完成" 
+  }]
+}

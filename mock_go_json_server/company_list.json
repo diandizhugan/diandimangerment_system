@@ -1,0 +1,41 @@
+{
+  "success": "ok",
+  "companies": [{
+    "companyid": "c0001",
+    "abbreviation": "WR",
+    "companyname": "威尔士",
+    "remarks": {},
+    "inserttime": "2020-08-20 12:10:00",
+    "modifytime": "2020-09-10 08:12:00",
+    "status": 1,
+    "operations": ["close","modify"] 
+  },{
+    "companyid": "c0002",
+    "abbreviation": "CCT",
+    "companyname": "常春藤学校",
+    "remarks": {},
+    "inserttime": "2020-08-16 12:10:00",
+    "modifytime": "2020-09-01 08:12:00",
+    "status": 1,
+    "operations": ["close","modify"] 
+  },{
+    "companyid": "c0003",
+    "abbreviation": "WL",
+    "companyname": "万丽酒店",
+    "remarks": {},
+    "inserttime": "2020-08-19 12:10:00",
+    "modifytime": "2020-09-08 08:12:00",
+    "status": 2,
+    "operations": ["close","modify"] 
+  }
+],
+  "status": [{
+    "value": 1,
+    "text": "可用"
+  },
+  {
+    "value": 2,
+    "text": "已删除"
+  }
+]
+}

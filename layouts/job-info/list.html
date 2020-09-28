@@ -1,0 +1,256 @@
+{{ define "main"}}
+<div class="div-default">
+  <el-row >
+    <el-button type="primary" class="ml-2" @click="addVisible = true">添加角色</el-button>
+    <el-button type="primary" class="ml-2" >批量导入</el-button>
+    <el-button type="primary" class="ml-2">批量导出</el-button>
+    <el-button type="danger" class="ml-2" :disabled="this.sels.length === 0" @click="delAllVisible = true">批量删除</el-button>
+  </el-row>
+</div>
+
+<div class="div-default ml-2">
+  <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%"
+  @selection-change="handleSelectionChange" height="500">
+  <el-table-column type="selection" width="55">
+  </el-table-column>
+  <el-table-column prop="jobid" label="角色编号" width="200" sortable>
+  </el-table-column>
+  <el-table-column prop="jobname" label="角色名称" width="120">
+  </el-table-column>
+  <el-table-column label="添加日期" show-overflow-tooltip sortable>
+    <template slot-scope="scope">[[ scope.row.inserttime ]]</template>
+  </el-table-column>
+  <el-table-column label="修改日期" show-overflow-tooltip sortable>
+    <template slot-scope="scope">[[ scope.row.modifytime ]]</template>
+  </el-table-column>
+  <el-table-column label="相关用户" width="120">
+    <template slot-scope="scope">[[ scope.row.clients ]]人</template>
+  </el-table-column>
+  <el-table-column  label="当前权限" width="200">
+    <template slot-scope="scope">
+      <template v-for="power in scope.row.powers">
+        <template>[[ power ]]</template>,
+      </template>
+    </template>
+  </el-table-column>
+  <el-table-column prop="status_cn" label="当前状态" width="120" sortable :filters="statustags" :filter-method="filterStatus"
+    filter-placement="bottom-end">
+  </el-table-column>
+  <el-table-column label="操作" width="300">
+    <template slot-scope="scope">
+      <template v-for="opt in scope.row.operations">
+        <template v-if='"close" == opt'>
+          <el-button size="mini" type="danger" @click="closeRecord(scope.$index, scope.row)">关闭</el-button>
+        </template>
+        <template v-if='"modify" == opt'>
+          <el-button size="mini" type="success" @click="modifyRecord(scope.$index, scope.row)">修改</el-button>
+        </template>
+        <template v-if='"manager" == opt'>
+          <el-button size="mini" type="success" @click="managerRecord(scope.$index, scope.row)">管理权限</el-button>
+        </template>
+      </template>
+    </template>
+  </el-table-column>
+</el-table>
+
+<!--  批量删除 -->
+<el-dialog title="批量删除提示" :visible.sync="delAllVisible" width="30%" >
+  <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="delAllVisible = false">取消</el-button>
+    <el-button type="danger" >确认删除</el-button>
+  </span>
+</el-dialog>
+
+<!--  添加角色信息 -->
+<el-dialog :title="form.title" :visible.sync="addVisible" width="30%" >
+  <el-form :model="form" :rules="rules" ref="form">
+    <el-form-item label="角色名称" :label-width="formLabelWidth" prop="jobname">
+      <el-input v-model="form.jobname" autocomplete="off"></el-input>
+    </el-form-item>
+    <el-form-item label="角色备注" prop="detail">
+      <el-input type="textarea" v-model="form.detail"></el-input>
+    </el-form-item>
+  </el-form>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="addVisible = false">取消</el-button>
+    <el-button type="danger" @click="submitForm('form')">确认[[form.active]]</el-button>
+  </span>
+</el-dialog>
+
+<!--    单行关闭  -->
+<el-dialog title="删除提示" :visible.sync="closeVisible" width="40%" >
+  <el-form :data="closeForm" label-width="100px" >
+    <el-row >
+      <el-col :span="12">
+        <el-form-item label="角色编号" prop="jobid">
+          [[closeForm.jobid]]
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="角色名称" prop="jobname" >
+          [[closeForm.jobname]]
+        </el-form-item>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="12">
+        <el-form-item label="相关用户" prop="clients" >
+          [[closeForm.clients]]
+        </el-form-item>        
+      </el-col>
+      
+      <el-col :span="12">
+        <el-form-item label="当前权限">
+          <template v-for="power in closeForm.powers">
+            <template>[[ power ]]</template>,
+          </template>
+        </template>
+        </el-form-item>
+      </el-col>
+    
+    </el-row>
+  </el-form>
+  <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="repairVisible = false">取消</el-button>
+    <el-button type="danger" >确认提交</el-button>
+  </span>
+</el-dialog>
+
+</div>
+
+{{ end}}
+
+{{define "main_script"}}
+<script>
+
+  $.getJSON("{{.Site.Params.jsonURL}}/api/v1/roles")
+    .then((ret) => {
+      new Vue({
+        el: "#app",
+        delimiters: ['[[', ']]'],
+        data: Object.assign({
+          websocketDisconnected: false,
+          persons: [],
+          statustags: [],
+          companies: [],
+          filterform: {
+            companyids: [],
+            options: [],
+            powers:[],
+          },
+          sels:[],
+          //添加按钮弹出框
+          addVisible:false,
+          form: {
+            title:"添加角色",
+            active:"添加",
+            jobname: '',
+            jobid: '',
+            detail: '',
+            clients: '',
+            powers:[],
+          },
+          //添加按钮弹出框规则设置
+          rules:{
+            jobname:[
+              {required:true,message:"请填写角色名称",trigger:"blur"},
+            ]
+          },
+          //批量删除对话框弹出
+          delAllVisible:false,
+          //单行关闭对话框弹出
+          closeVisible:false,
+          //设置form用于进行添加的时候绑定值
+          closeForm:{},
+          modifyForm:{},
+          currentIndex:[],
+          
+          formLabelWidth: '120px',
+        }, {
+          "roles": ret.roles,
+          "companies": ret.companies,
+          "statustags": ret.status,
+          "powers": ret.powers
+        }),
+        computed: {
+          tableData() {
+            let roles = this.roles.map(r => {
+              return Object.assign(r, this.roleConvert(r))
+            })
+
+            if (this.filterform.companyids.length <= 0) {
+              return roles;
+            }
+            roles = this.roles.filter(r => {
+            //  return this.filterform.storeids.some(s => r.storeid.includes(s));
+            for(var i = 0 ; i < this.filterform.companyids.length ; i++){
+              if ( this.filterform.companyids[i] == r.companyid) {
+                return r
+              }
+            }
+            });
+            return roles;
+          }
+        },
+        methods: {
+          roleConvert(role) {
+            if (role.status == 1) {
+              return {
+                order: 1,
+                status_cn: "可用"
+              }
+            } else if (role.status == 2) {
+              return {
+                order: 2,
+                status_cn: "不可用"
+              }
+            }
+          },
+          handleSelectionChange(sels) {
+            this.sels = sels ,
+            console.log()
+          },
+          filterStatus(value, row) {
+            return row.status === value
+          },
+          filterRecord(value) {
+
+          },
+          //验证是否能能成功提交维修对话框
+          submitForm(formName){
+            this.$refs[formName].validate((valid) => {
+              if (valid) {
+                alert('submit!');
+              } else {
+                console.log('error submit!!');
+                return false;
+              }
+            });
+          },
+          // 增加数据的方式,将这些值增加到单行删除按钮对话框中
+          closeRecord(index , row){
+          //将表格中的数据传递到对话框
+            this.closeForm = this.tableData[index];
+            this.currentIndex = index;
+            this.closeVisible = true;
+          },
+          // 增加数据的方式,将这些值增加到单行修改按钮对话框中
+          modifyRecord(index , row){
+          //将表格中的数据传递到对话框
+            this.form = this.tableData[index];
+            this.currentIndex = index;
+            this.addVisible = true;
+            this.form.title = "修改角色信息";
+            this.form.active = "修改";
+          },
+          managerRecord(index , row){
+            this.jobid = this.tableData[index].jobid;
+            window.location.replace ('/rule?jobid='+this.jobid)
+          },
+        }
+      })
+    })
+</script>
+{{ end }}

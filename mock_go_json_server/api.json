@@ -1,0 +1,47 @@
+{
+  "port": 3000,
+  "endpoints": [
+    {
+     "method": "GET",
+     "status": 200,
+     "path": "/api/v1/records",
+     "jsonPath": "./record_list.json"
+   },
+   {
+    "method": "GET",
+    "status": 200,
+    "path": "/api/v1/companies",
+    "jsonPath": "./company_list.json"
+  },
+  {
+    "method": "GET",
+    "status": 200,
+    "path": "/api/v1/stores",
+    "jsonPath": "./store_list.json"
+  },
+  {
+    "method": "GET",
+    "status": 200,
+    "path": "/api/v1/persons",
+    "jsonPath": "./person_list.json"
+  },
+  {
+    "method": "GET",
+    "status": 200,
+    "path": "/api/v1/roles",
+    "jsonPath": "./role_list.json"
+  },
+  {
+    "method": "GET",
+    "status": 200,
+    "path": "/api/v1/roles/wr001/rules",
+    "jsonPath": "./role_wr001_list.json"
+  },
+  {
+    "method": "GET",
+    "status": 200,
+    "path": "/api/v1/roles/wl001/rules",
+    "jsonPath": "./role_wl001_list.json"
+  }
+ ]
+}

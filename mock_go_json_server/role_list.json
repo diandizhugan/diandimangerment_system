@@ -1,0 +1,54 @@
+{
+  "success": "ok",
+  "roles": [{
+    "jobid": "wr001",
+    "jobname": "电工",
+    "clients": "20",
+    "detail": "",
+    "inserttime": "2020-08-20 12:10:00",
+    "modifytime": "2020-09-10 08:12:00",
+    "powers":["提交报修","撤销报修","确认维修成果"],
+    "status": 1,
+    "operations": ["close","modify","manager"] 
+  },{
+    "jobid": "cct001",
+    "jobname": "项目经理",
+    "clients": "13",
+    "detail": "",
+    "inserttime": "2020-08-20 12:10:00",
+    "modifytime": "2020-09-01 08:12:00",
+    "powers":["提交报修","撤销报修","确认维修成果"],
+    "status": 2,
+    "operations": ["close","modify","manager"] 
+  },{
+    "jobid": "wl001",
+    "jobname": "后台操作",
+    "clients": "2",
+    "detail": "",
+    "inserttime": "2020-08-20 12:10:00",
+    "modifytime": "2020-09-08 08:12:00",
+    "powers":["提交报修","撤销报修","确认维修成果"],
+    "status": 2,
+    "operations": ["close","modify","manager"] 
+  }
+],
+  "status": [{
+    "value": 1,
+    "text": "可用"
+  },
+  {
+    "value": 2,
+    "text": "不可用"
+  } 
+],
+  "powers":[{
+    "powerid": "submit",
+    "name": "提交报修"  
+  },{
+    "powerid": "cancel",
+    "name": "取消报修" 
+  },{
+    "powerid": "confirm",
+    "name": "确认报修完成" 
+  }]
+}

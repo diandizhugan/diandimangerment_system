@@ -6,7 +6,9 @@
     @select="handleSelect"
     background-color="#545c64"
     text-color="#fff"
-    active-text-color="#ffd04b">
+    active-text-color="#ffd04b"
+    unique-opened
+    >
     <el-menu-item index="1"><img class="img-fluid" src="{{ .Site.Params.logo | absURL }}" alt="{{ .Site.Title }}"></el-menu-item>
     <el-menu-item index="/">首页</el-menu-item>
     {{ range .Site.Menus.main }}
@@ -30,12 +32,12 @@ new Vue({
   el: "#top-menu",
   delimiters: ['[[',']]'],
   data: {
-    activeIndex2: a
+    activeIndex2: a 
   },
   methods: {
     handleSelect(key, keyPath) {
       console.log(key, keyPath);
-      window.location.replace (keyPath); 
+      window.location.replace (key); 
     }
   }
 })

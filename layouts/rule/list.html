@@ -1,0 +1,82 @@
+{{ define "main"}}
+
+<div class="div-default">
+  <el-row>
+    <el-col :span="4" :offset="2">
+      <p>角色名称：[[ jobname ]]</p>
+    </el-col>
+    <el-col :span="18">
+
+      <!--  系统权限设置 -->
+      
+      <div v-for="( item , index) in rulelist" :key="index">
+        <el-row>[[ item.list_type ]]</el-row>
+        <el-row class="rule-select" v-for="( data , a ) in item.items" :key="a">        
+          <el-col :span="4">
+            <p>[[ data.rulename ]]</p> 
+          </el-col>
+          <el-col :span="16">
+            <div>
+              
+              <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll[ index + a ]" @change="handleCheckAllChange">全选</el-checkbox>
+               
+              <div style="margin: 15px 0;"></div>
+              <el-checkbox-group  @change="handleCheckedRulesChange">
+                [[ data.rules ]]
+                <el-checkbox v-for="rule in data.rules" :label="rule" :key="rule">lalala</el-checkbox>
+              </el-checkbox-group>
+            </div>  
+          </el-col>
+        </el-row>
+      </div>
+
+
+    </el-col>
+  </el-row>
+</div>
+
+<div class="div-default">
+  <el-row type="flex" justify="center">
+    <el-button type="primary" class="ml-3" >返回上页</el-button>
+    <el-button type="primary" class="ml-3">重置选择</el-button>
+    <el-button type="danger" class="ml-3" @click="sumbitVisible = true">提交修改</el-button>
+  </el-row>
+</div>
+
+
+{{ end }}
+
+{{define "main_script"}}
+<script>
+  $.getJSON("{{.Site.Params.jsonURL}}/api/v1/roles/wl001/rules")
+    .then((ret) => {
+      new Vue({
+        el:"#app",
+        delimiters: ['[[', ']]'],
+        data: Object.assign({
+          websocketDisconnected: false,
+          checkAll: [],
+          isIndeterminate: true,
+          jobname:'',
+          rulelist:{},
+          checkedRules:[],          
+          sumbitVisible:false
+        },{
+          "jobname": ret.jobname,
+          "rulelist": ret.rulelist,
+        }),
+        methods: {
+          handleCheckAllChange(val) {
+            this.checkedCities = val ? cityOptions : [];
+            this.isIndeterminate = false;
+          },
+          handleCheckedRulesChange(value) {
+            let checkedCount = value.length;
+            this.checkAll = checkedCount === this.cities.length;
+            this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length;
+          }
+        }
+      })
+    })
+</script>
+{{ end }}

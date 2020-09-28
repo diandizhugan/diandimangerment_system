@@ -1,0 +1,70 @@
+{
+  "success": "ok",
+  "stores": [{
+    "storeid": "WR001",
+    "storename": "浦东南路新昌店",
+    "storeadd": "浦东南路3129号",
+    "company": "威尔士",
+    "companyid": "20001",
+    "endingtime": "2022-08-20 12:10:00",
+    "endingday": "560",
+    "inserttime": "2020-08-20 12:10:00",
+    "modifytime": "2020-09-10 08:12:00",
+    "status": 1,
+    "operations": ["close","modify"] 
+  },{
+    "storeid": "CCT001",
+    "storename": "浦东二区分部",
+    "storeadd": "浦东二区临街商铺15-39号",
+    "company": "常春藤学校",
+    "companyid": "20002",
+    "endingtime": "2024-08-16 12:10:00",
+    "endingday": "650",
+    "inserttime": "2020-08-20 12:10:00",
+    "modifytime": "2020-09-01 08:12:00",
+    "status": 2,
+    "operations": ["close","modify"] 
+  },{
+    "storeid": "WL001",
+    "storename": "南京西路店",
+    "storeadd": "南京西路2327号黄埔大厦17楼",
+    "company": "万丽酒店",
+    "companyid": "20003",
+    "endingtime": "2023-08-19 12:10:00",
+    "endingday": "580",
+    "inserttime": "2020-08-20 12:10:00",
+    "modifytime": "2020-09-08 08:12:00",
+    "status": 3,
+    "operations": ["close","modify"] 
+  }
+],
+"companies": [{
+  "id": 20001,
+  "name": "威尔士",
+  "company": "威尔士"
+},
+{
+  "id": 20002,
+  "name": "常春藤",
+  "company": "常春藤学校"
+},
+{
+  "id": 20003,
+  "name": "万丽酒店",
+  "company": "万丽酒店"
+}
+],
+  "status": [{
+    "value": 1,
+    "text": "施工中"
+  },
+  {
+    "value": 2,
+    "text": "保修中"
+  },
+  {
+    "value": 3,
+    "text": "出保中"
+  }
+]
+}

@@ -1,0 +1,122 @@
+{
+  "success": "ok",
+  "records": [{
+    "id": 1,
+    "storename": "威尔士星游城店",
+    "company": "威尔士",
+    "content": {
+      "desc": "男更轨道灯坏一个，女更安全指示拍坏一个，更衣室过道安全指示拍坏一个，射灯上次被拆了到现在还没装上。麻烦尽快安排",
+      "pics": [
+        "file1",
+        "file2",
+        "file3"
+      ]
+    },
+    "personname": "金先生",
+    "contactway": "1378785678",
+    "address": "上海市虹口区威尔士大厦17楼12-08室",
+    "pic": "11111",
+    "inserttime": "2020-08-30 12:10:00",
+    "status": 1,
+    "operations": ["close","accept"]
+  },
+  {
+    "id":2,
+    "storename": "威尔士星游城店",
+    "storeid": "20001",
+    "company": "威尔士",
+    "content": {},
+    "personname": "金先生",
+    "contactway": "1378785678",
+    "address": "上海市虹口区威尔士大厦17楼12-08室",
+    "pic": "11111",
+    "inserttime": "2020-08-20 12:10:00",
+    "accepttime": "2020-08-21 09:23:20",
+    "status": 2,
+    "operations": ["close","assign"]
+  },
+  {
+    "id":3,
+    "storename": "威尔士海伦路店",
+    "storeid": "20002",
+    "company": "威尔士",
+    "content": {},
+    "personname": "金先生",
+    "contactway": "1378785678",
+    "address": "上海市虹口区威尔士大厦17楼12-08室",
+    "pic": "11111",
+    "inserttime": "2020-08-10 12:10:00",
+    "accepttime": "2020-08-21 09:23:20",
+    "assigntime": "2020-08-21 10:20:10",
+    "status": 3,
+    "operations": ["close","repair"]   
+  },
+  {
+    "id":4,
+    "storename": "威尔士星游城店",
+    "storeid": "20001",
+    "company": "威尔士",
+    "content": {},
+    "personname": "金先生",
+    "contactway": "1378785678",
+    "address": "上海市虹口区威尔士大厦17楼12-08室",
+    "pic": "11111",
+    "inserttime": "2020-08-20 12:10:00",
+    "accepttime": "2020-08-21 09:23:20",
+    "assigntime": "2020-08-21 10:20:10",
+    "repairtime": "2020-08-21 16:20:10",
+    "status": 4,
+    "operations": ["check"]  
+  },
+  {
+    "id":5,
+    "storename": "威尔士星游城店",
+    "storeid": "20001",
+    "company": "威尔士",
+    "content": {},
+    "personname": "金先生",
+    "contactway": "1378785678",
+    "address": "上海市虹口区威尔士大厦17楼12-08室",
+    "pic": "11111",
+    "inserttime": "2020-08-20 12:10:00",
+    "accepttime": "2020-08-21 09:23:20",
+    "assigntime": "2020-08-21 10:20:10",
+    "repairtime": "2020-08-21 16:20:10",
+    "checktime": "2020-08-21 16:21:20",
+    "status": 5,
+    "operations": []
+  }
+  ],
+  "stores": [{
+      "id": 20001,
+      "name": "威尔士星游城店",
+      "company": "威尔士"
+    },
+    {
+      "id": 20002,
+      "name": "威尔士海伦路店",
+      "company": "威尔士"
+    }
+  ],
+  "status": [{
+      "value": 1,
+      "text": "等待受理"
+    },
+    {
+      "value": 2,
+      "text": "等待分派"
+    },
+    {
+      "value": 3,
+      "text": "等待上门维修"
+    },
+    {
+      "value": 4,
+      "text": "等待客户确认"
+    },
+    {
+      "value": 5,
+      "text": "已完成维保"
+    }
+  ]
+}
