@@ -1,44 +1,88 @@
-<div id="top-menu">
-  <el-menu
-    :default-active="activeIndex2"
-    class="el-menu-demo"
-    mode="horizontal"
-    @select="handleSelect"
-    background-color="#545c64"
-    text-color="#fff"
-    active-text-color="#ffd04b"
-    unique-opened
-    >
-    <el-menu-item index="1"><img class="img-fluid" src="{{ .Site.Params.logo | absURL }}" alt="{{ .Site.Title }}"></el-menu-item>
-    <el-menu-item index="/">首页</el-menu-item>
-    {{ range .Site.Menus.main }}
-    {{ if .HasChildren }}
-    <el-submenu index="{{ .URL }}">
-      <template slot="title">{{ .Name }}</template>
-      {{ range .Children}}
-      <el-menu-item index="{{ .URL }}"> {{ .Name }}</el-menu-item>
-      {{ end }}
-    </el-submenu>
-    {{ else }}
-    <el-menu-item index="{{ .URL }}" >{{ .Name }}</el-menu-item>
-    {{ end }}
-    {{ end }}
-  </el-menu>
-
+<div id="top-menu" style="background-color:#545c64">
+  <el-row>
+    <el-col :span="16">
+      <el-menu :default-active="activeIndex2" class="el-menu-demo" mode="horizontal" @select="handleSelect"
+        background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" unique-opened>
+        <el-menu-item index="1"><img class="img-fluid" src="{{ .Site.Params.logo | absURL }}" alt="{{ .Site.Title }}">
+        </el-menu-item>
+        <el-menu-item index="/dashboard">首页</el-menu-item>
+        {{ range .Site.Menus.main }}
+        {{ if .HasChildren }}
+        <el-submenu index="{{ .URL }}">
+          <template slot="title">{{ .Name }}</template>
+          {{ range .Children}}
+          <el-menu-item index="{{ .URL }}"> {{ .Name }}</el-menu-item>
+          {{ end }}
+        </el-submenu>
+        {{ else }}
+        <el-menu-item index="{{ .URL }}">{{ .Name }}</el-menu-item>
+        {{ end }}
+        {{ end }}
+      </el-menu>
+    </el-col>
+    <el-col :span="8">
+      <el-menu :default-active="activeIndex3" class="el-menu-demo" mode="horizontal" @select="handleSelect"
+        background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" unique-opened>
+        {{ range .Site.Menus.right }}
+        {{ if .HasChildren }}
+        <el-submenu index="{{ .URL }}">
+          <template slot="title">{{ .Name }}</template>
+          {{ range .Children}}
+          <el-menu-item index="{{ .URL }}"> {{ .Name }}</el-menu-item>
+          {{ end }}
+        </el-submenu>
+        {{ else }}
+        <el-menu-item index="{{ .URL }}">{{ .Name }}</el-menu-item>
+        {{ end }}
+        {{ end }}
+      </el-menu>
+    </el-col>
+  </el-row>
 </div>
 <script>
-var a = {{ .Page.RelPermalink }};
-new Vue({
-  el: "#top-menu",
-  delimiters: ['[[',']]'],
-  data: {
-    activeIndex2: a 
-  },
-  methods: {
-    handleSelect(key, keyPath) {
-      console.log(key, keyPath);
-      window.location.replace (key); 
+  var a = "{{ .Page.RelPermalink }}";
+  new Vue({
+    el: "#top-menu",
+    delimiters: ['[[', ']]'],
+    data: {
+      activeIndex2: a,
+      username: "",
+    },
+    mounted: function () {
+      this.$cookies.set("historypage", "{{ .Page.Permalink }}");
+      token = this.$cookies.get("token");
+      uid = this.$cookies.get("uid");
+      //console.log(token);
+      if (token == null || token == "") {
+        window.location.replace("/");
+      } else {
+        $.ajax({
+          url: "{{ .Site.Params.jsonUrl }}" + "/api/v1/users/checktoken",
+          method: "post",
+          contentType: 'application/x-www-form-urlencoded;charset:UTF-8',
+          data: {},
+          headers: {
+            uid: uid,
+            token:token,
+            platform: "pc",
+          }
+        }).then(ret => {
+          if (ret.code == 200){
+            this.username = ret.datas.username;
+          }
+          if (ret.code != 200) {
+            window.location.replace("/");
+            console.log(ret);
+          }
+        })
+      }
+
+    },
+    methods: {
+      handleSelect(key, keyPath) {
+        console.log(key, keyPath);
+        window.location.replace(key);
+      }
     }
-  }
-})
+  })
 </script>

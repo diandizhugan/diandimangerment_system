@@ -1,10 +1,12 @@
 {{ define "main"}}
 <div class="div-default">
-  <el-row >
-    <el-button type="primary" class="ml-2" :disabled="this.sels.length === 0" >批量受理</el-button>
+  <el-row>
+    <!--<el-button type="primary" class="ml-2" :disabled="this.sels.length === 0">批量受理</el-button>
     <el-button type="primary" class="ml-2" :disabled="this.sels.length === 0">批量派发</el-button>
-    <el-button type="primary" class="ml-2" :disabled="this.sels.length === 0" @click="closeAllVisible = true">批量关闭</el-button>
-    <el-button type="danger" class="ml-2" :disabled="this.sels.length === 0" @click="delAllVisible = true">批量删除</el-button>
+    <el-button type="primary" class="ml-2" :disabled="this.sels.length === 0" @click="closeAllVisible = true">批量关闭
+    </el-button>
+    <el-button type="danger" class="ml-2" :disabled="this.sels.length === 0" @click="delAllVisible = true">批量删除
+    </el-button>-->
   </el-row>
 </div>
 
@@ -12,132 +14,128 @@
   <el-row type="flex">
     筛选
     <el-select v-model="filterform.storeids" filterable placeholder="请选择门店" multiple size="small" class="ml-2">
-      <el-option
-        v-for="item in stores"
-        :key="item.id"
-        :label="item.name"
-        :value="item.id">
+      <el-option v-for="item in stores" :key="item.code" :label="item.name" :value="item.code">
       </el-option>
     </el-select>
   </el-row>
   <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%"
-  @selection-change="handleSelectionChange" height="500">
-  <el-table-column type="selection" width="55">
-  </el-table-column>
-  <el-table-column prop="status_cn" label="当前状态" width="120" sortable :filters="statustags" :filter-method="filterStatus"
-    filter-placement="bottom-end">
-  </el-table-column>
-  <el-table-column prop="storename" label="门店名称" width="200" sortable>
-  </el-table-column>
-  <el-table-column prop="company" label="所属公司" width="120">
-  </el-table-column>
-  <el-table-column prop="content" label="报修内容" width="200">
-  </el-table-column>
-  <el-table-column type="expand">
-    <template slot-scope="scope">
-      <el-form label-position="left" inline class="demo-table-expand">
-        <el-form-item label="报修人">
-          <span>[[ scope.row.personname ]]</span>
-        </el-form-item>
-        <el-form-item label="联系方式">
-          <span>[[ scope.row.contactway ]]</span>
-        </el-form-item>
-        <el-form-item label="报修内容">
-          <span>[[ scope.row.content ]]</span>
-        </el-form-item>
-        <el-form-item label="报修地址">
-          <span>[[ scope.row.address ]]</span>
-        </el-form-item>
-        <el-form-item label="相关图片">
-          <span>[[ scope.row.pic ]]</span>
-        </el-form-item>
-      </el-form>
-    </template>
-  </el-table-column>
-  <el-table-column label="报修时间" show-overflow-tooltip sortable>
-    <template slot-scope="scope">[[ scope.row.inserttime ]]</template>
-  </el-table-column>
-  <el-table-column label="受理时间" show-overflow-tooltip sortable>
-    <template slot-scope="scope">[[ scope.row.accepttime ]]</template>
-  </el-table-column>
-  <el-table-column label="派发时间" show-overflow-tooltip sortable>
-    <template slot-scope="scope">[[ scope.row.assigntime ]]</template>
-  </el-table-column>
-  <el-table-column label="维修时间" show-overflow-tooltip sortable>
-    <template slot-scope="scope">[[ scope.row.repairtime ]]</template>
-  </el-table-column>
-  <el-table-column label="完成时间" show-overflow-tooltip sortable>
-    <template slot-scope="scope">[[ scope.row.checktime ]]</template>
-  </el-table-column>
-  <el-table-column label="操作" width="160">
-    <template slot-scope="scope">
-      <template v-for="opt in scope.row.operations">
-        <template v-if='"close" == opt'>
-          <el-button size="mini" type="danger" @click="closeRecord(scope.row.id)">关闭</el-button>
-        </template>
-        <template v-if='"accept" == opt'>
-          <el-button size="mini" type="success" @click="acceptRecord(scope.row.id)">受理</el-button>
-        </template>
-        <template v-if='"assign" == opt'>
-          <el-button size="mini" type="success" @click="assignRecord(scope.row.id)">分派</el-button>
-        </template>
-        <template v-if='"repair" == opt'>
-          <el-button size="mini" type="success" @click="repairRecord(scope.$index, scope.row)">维修</el-button>
-        </template>
-        <template v-if='"check" == opt'>
-          <el-button size="mini" type="success" @click="checkRecord(scope.row.id)">验收</el-button>
+    @selection-change="handleSelectionChange" :height="height" stripe v-loading="loading">
+
+    <el-table-column type="selection" width="55">
+    </el-table-column>
+    <el-table-column prop="status_cn" label="当前状态" width="120" sortable :filters="statustags"
+      :filter-method="filterStatus" filter-placement="bottom-end">
+    </el-table-column>
+    <el-table-column prop="data.base.code" label="报修单号" width="200" sortable>
+    </el-table-column>
+    <el-table-column prop="data.base.storename" label="门店名称" width="200" sortable>
+    </el-table-column>
+    <el-table-column prop="data.base.companyname" label="所属公司" width="120">
+    </el-table-column>
+    <el-table-column prop="data.base.content" label="报修内容" width="200">
+    </el-table-column>
+    <el-table-column type="expand">
+      <template slot-scope="scope">
+        <el-form label-position="left" inline class="demo-table-expand">
+          <el-form-item label="报修人">
+            <span>[[ scope.row.personname ]]</span>
+          </el-form-item>
+          <el-form-item label="联系方式">
+            <span>[[ scope.row.contactway ]]</span>
+          </el-form-item>
+          <el-form-item label="报修内容">
+            <span>[[ scope.row.content ]]</span>
+          </el-form-item>
+          <el-form-item label="报修地址">
+            <span>[[ scope.row.address ]]</span>
+          </el-form-item>
+          <el-form-item label="相关图片">
+            <span>[[ scope.row.pic ]]</span>
+          </el-form-item>
+        </el-form>
+      </template>
+    </el-table-column>
+    <el-table-column prop="data.operation_time.created" label="报修时间" show-overflow-tooltip sortable>
+    </el-table-column>
+    <el-table-column prop="data.operation_time.accepted" label="受理时间" show-overflow-tooltip sortable>
+    </el-table-column>
+    <el-table-column prop="data.operation_time.assigned" label="派发时间" show-overflow-tooltip sortable>
+    </el-table-column>
+    <el-table-column prop="data.operation_time.serviced" label="维修时间" show-overflow-tooltip sortable>
+    </el-table-column>
+    <el-table-column prop="data.operation_time.confirmed" label="验收时间" show-overflow-tooltip sortable>
+    </el-table-column>
+    <el-table-column prop="data.operation_time.finished" label="完成时间" show-overflow-tooltip sortable>
+    </el-table-column>
+    <el-table-column label="操作" width="160">
+      <template slot-scope="scope">
+        <template v-for="opt in scope.row.operations">
+          <template v-if='"close" == opt'>
+            <el-button size="mini" type="danger" @click="closeRecord(scope.row.id)">关闭</el-button>
+          </template>
+          <template v-if='"accept" == opt'>
+            <el-button size="mini" type="success" @click="acceptRecord(scope.row.id)">受理</el-button>
+          </template>
+          <template v-if='"assign" == opt'>
+            <el-button size="mini" type="success" @click="assignRecord(scope.row.id)">分派</el-button>
+          </template>
+          <template v-if='"repair" == opt'>
+            <el-button size="mini" type="success" @click="repairRecord(scope.$index, scope.row)">维修</el-button>
+          </template>
+          <template v-if='"check" == opt'>
+            <el-button size="mini" type="success" @click="checkRecord(scope.row.id)">验收</el-button>
+          </template>
         </template>
       </template>
-    </template>
-  </el-table-column>
-</el-table>
+    </el-table-column>
+  </el-table>
 
-<el-dialog title="批量删除提示" :visible.sync="delAllVisible" width="30%" >
-  <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
-  <span slot="footer" class="dialog-footer">
-    <el-button @click="delAllVisible = false">取消</el-button>
-    <el-button type="danger" >确认删除</el-button>
-  </span>
-</el-dialog>
+  <el-dialog title="批量删除提示" :visible.sync="delAllVisible" width="30%">
+    <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="delAllVisible = false">取消</el-button>
+      <el-button type="danger">确认删除</el-button>
+    </span>
+  </el-dialog>
 
-<el-dialog title="批量关闭提示" :visible.sync="closeAllVisible" width="30%" >
-  <div class="del-dialog-cnt">关闭不可恢复，是否确定关闭？</div>
-  <span slot="footer" class="dialog-footer">
-    <el-button @click="closeAllVisible = false">取消</el-button>
-    <el-button type="danger" >确认关闭</el-button>
-  </span>
-</el-dialog>
+  <el-dialog title="批量关闭提示" :visible.sync="closeAllVisible" width="30%">
+    <div class="del-dialog-cnt">关闭不可恢复，是否确定关闭？</div>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="closeAllVisible = false">取消</el-button>
+      <el-button type="danger">确认关闭</el-button>
+    </span>
+  </el-dialog>
 
-<el-dialog title="维修提示" :visible.sync="repairVisible" width="40%" >
-  <el-form :data="repairForm" :rules="rules" ref="repairForm" label-width="100px" >
-    <el-form-item label="报修门店" prop="storename">
-      [[repairForm.storename]]
-    </el-form-item>
-    <el-form-item label="报修时间" prop="inserttime">
-      [[repairForm.inserttime]]
-    </el-form-item>
-    <el-form-item label="报修人" prop="personname">
-      [[repairForm.personname]]
-    </el-form-item>
-    <el-form-item label="联系方式" prop="contactway">
-      [[repairForm.contactway]]
-    </el-form-item>
-    <el-form-item label="报修内容" prop="content">
-      [[repairForm.content]]
-    </el-form-item>
-    <el-form-item label="报修地址" prop="address">
-      [[repairForm.address]]
-    </el-form-item>
-  
-    <el-form-item label="维修详情" prop="detail">
-      <el-input type="textarea" v-model="repairForm.detail"></el-input>
-    </el-form-item>
-  </el-form>
-  <span slot="footer" class="dialog-footer">
-    <el-button @click="repairVisible = false">取消</el-button>
-    <el-button type="danger" @click="submitForm('repairForm')">确认提交</el-button>
-  </span>
-</el-dialog>
+  <el-dialog title="维修提示" :visible.sync="repairVisible" width="40%">
+    <el-form :data="repairForm" :rules="rules" ref="repairForm" label-width="100px">
+      <el-form-item label="报修门店" prop="storename">
+        [[repairForm.storename]]
+      </el-form-item>
+      <el-form-item label="报修时间" prop="inserttime">
+        [[repairForm.inserttime]]
+      </el-form-item>
+      <el-form-item label="报修人" prop="personname">
+        [[repairForm.personname]]
+      </el-form-item>
+      <el-form-item label="联系方式" prop="contactway">
+        [[repairForm.contactway]]
+      </el-form-item>
+      <el-form-item label="报修内容" prop="content">
+        [[repairForm.content]]
+      </el-form-item>
+      <el-form-item label="报修地址" prop="address">
+        [[repairForm.address]]
+      </el-form-item>
+
+      <el-form-item label="维修详情" prop="detail">
+        <el-input type="textarea" v-model="repairForm.detail"></el-input>
+      </el-form-item>
+    </el-form>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="repairVisible = false">取消</el-button>
+      <el-button type="danger" @click="submitForm('repairForm')">确认提交</el-button>
+    </span>
+  </el-dialog>
 </div>
 
 
@@ -145,121 +143,163 @@
 
 {{define "main_script"}}
 <script>
-  $.getJSON("{{.Site.Params.jsonURL}}/api/v1/records")
-    .then((ret) => {
-      new Vue({
-        el: "#app",
-        delimiters: ['[[', ']]'],
-        data: Object.assign({
-          websocketDisconnected: false,
-          records: [],
-          statustags: [],
-          stores: [],
-          filterform: {
-            storeids: [],
-            options: [],
-          },
-          sels:[],
-          //批量删除对话框弹出
-          delAllVisible:false,
-          //批量关闭对话框弹出
-          closeAllVisible:false,
-          //设置form用于进行添加的时候绑定值
-          repairForm:{},
-          currentIndex:[],
-          //维修按钮对话框弹出
-          repairVisible:false,
-          //维修对话框规则制定
-          rules:{
-            detail:[
-              {required:true,message:"请填写相关维修详情",trigger:"blur"}
-            ]
-          },
-          formLabelWidth: '120px',
-        }, {
-          "records": ret.records,
-          "stores": ret.stores,
-          "statustags": ret.status
-        }),
-        computed: {
-          tableData() {
-            let records = this.records.map(r => {
-              return Object.assign(r, this.recordConvert(r))
-            })
+  function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+      var c = ca[i].trim();
+      if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+    }
+    return "";
+  }
+  uid = getCookie("uid");
+  token = getCookie("token");
+  app = new Vue({
+    el: "#app",
+    delimiters: ['[[', ']]'],
+    data: Object.assign({
+      websocketDisconnected: false,
+      records: [],
+      statustags: [],
+      stores: [],
+      filterform: {
+        storeids: [],
+        options: [],
+      },
+      sels: [],
+      //批量删除对话框弹出
+      delAllVisible: false,
+      //批量关闭对话框弹出
+      closeAllVisible: false,
+      //设置form用于进行添加的时候绑定值
+      repairForm: {},
+      currentIndex: [],
+      //维修按钮对话框弹出
+      repairVisible: false,
+      //维修对话框规则制定
+      rules: {
+        detail: [{
+          required: true,
+          message: "请填写相关维修详情",
+          trigger: "blur"
+        }]
+      },
+      formLabelWidth: '120px',
+      height: null,
+      loading: true,
+    }),
+    mounted: function () {
 
-            if (this.filterform.storeids.length <= 0) {
-              return records;
-            }
-            records = this.records.filter(r => {
-            //  return this.filterform.storeids.some(s => r.storeid.includes(s));
-            for(var i = 0 ; i < this.filterform.storeids.length ; i++){
-              if ( this.filterform.storeids[i] == r.storeid) {
-                return r
-              }
-            }
-            });
-            return records;
-          }
+      this.height = window.innerHeight - this.$refs.multipleTable.$el.offsetTop - 50
+      url = "{{.Site.Params.jsonURL}}/api/v1/repairs/pc"
+      $.ajax({
+        url: url,
+        method: "get",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset:UTF-8",
+          "uid": uid,
+          "token": token,
+          "platform": "pc",
         },
-        methods: {
-          recordConvert(record) {
-            if (record.status == 1) {
-              return {
-                order: 1,
-                status_cn: "等待受理"
-              }
-            } else if (record.status == 2) {
-              return {
-                order: 2,
-                status_cn: "等待分派"
-              }
-            } else if (record.status == 3) {
-              return {
-                order: 3,
-                status_cn: "等待维修"
-              }
-            } else if (record.status == 4) {
-              return {
-                order: 4,
-                status_cn: "等待验收"
-              }
-            } else if (record.status == 5) {
-              return {
-                order: 5,
-                status_cn: "完成维保"
-              }
+        data: {
+          "statuscode": "all",
+        },
+      }).then(ret => {
+        this.records = ret.datas.repairs;
+        this.loading= false;
+      })
+      url = "{{.Site.Params.jsonURL}}/api/v1/stores"
+      $.ajax({
+        url: url,
+        method: "get",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset:UTF-8",
+          "uid": uid,
+          "token": token,
+          "platform": "pc",
+        },
+        data: {},
+      }).then(ret => {
+        this.stores = ret.datas;
+      })
+    },
+    computed: {
+      tableData() {
+        let records = this.records.map(r => {
+          return Object.assign(r, this.recordConvert(r))
+        })
+        if (this.filterform.storeids.length <= 0) {
+          return records;
+        }
+        records = this.records.filter(r => {
+          //  return this.filterform.storeids.some(s => r.storeid.includes(s));
+          for (var i = 0; i < this.filterform.storeids.length; i++) {
+            if (this.filterform.storeids[i] == r.data.base.storecode) {
+              return r
             }
-          },
-          // 增加数据的方式,将这些值增加到维修按钮对话框中
-          repairRecord(index , row){
-            //将表格中的数据传递到对话框
-            this.repairForm = this.tableData[index];
-            this.currentIndex = index;
-            this.repairVisible = true;
-          },
-          handleSelectionChange(sels) {
-            this.sels = sels ,
-            console.log()
-          },
-          filterStatus(value, row) {
-            return row.status === value
-          },
-          filterRecord(value) {
-
-          },
-          //验证是否能能成功提交维修对话框
-          submitForm(formName){
-            this.$refs[formName].validate((valid) => {
-              if (valid) {
-                alert('submit!');
-              } else {
-                console.log('error submit!!');
-                return false;
-              }
-            });
+          }
+        });
+        return records;
+      }
+    },
+    methods: {
+      recordConvert(record) {
+        if (record.status == 1) {
+          return {
+            order: 1,
+            status_cn: "等待受理"
+          }
+        } else if (record.status == 2) {
+          return {
+            order: 2,
+            status_cn: "等待分派"
+          }
+        } else if (record.status == 3) {
+          return {
+            order: 3,
+            status_cn: "等待维修"
+          }
+        } else if (record.status == 4) {
+          return {
+            order: 4,
+            status_cn: "等待验收"
+          }
+        } else if (record.status == 5) {
+          return {
+            order: 5,
+            status_cn: "完成维保"
           }
         }
-      })
-    })
+      },
+      // 增加数据的方式,将这些值增加到维修按钮对话框中
+      repairRecord(index, row) {
+        //将表格中的数据传递到对话框
+        this.repairForm = this.tableData[index];
+        this.currentIndex = index;
+        this.repairVisible = true;
+      },
+      handleSelectionChange(sels) {
+        this.sels = sels,
+          console.log()
+      },
+      filterStatus(value, row) {
+        return row.status === value
+      },
+      filterRecord(value) {
+
+      },
+      //验证是否能能成功提交维修对话框
+      submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            alert('submit!');
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      }
+    }
+  })
 </script>
 {{ end }}

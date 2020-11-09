@@ -1,10 +1,11 @@
 {{ define "main"}}
 <div class="div-default">
-  <el-row >
+  <el-row>
     <el-button type="primary" class="ml-2" @click="addVisible = true">添加门店</el-button>
-    <el-button type="primary" class="ml-2">批量导入</el-button>
+    <!--<el-button type="primary" class="ml-2">批量导入</el-button>
     <el-button type="primary" class="ml-2">批量导出</el-button>
-    <el-button type="danger" class="ml-2" :disabled="this.sels.length === 0" @click="delAllVisible = true">批量删除</el-button>
+    <el-button type="danger" class="ml-2" :disabled="this.sels.length === 0" @click="delAllVisible = true">批量删除
+    </el-button>-->
   </el-row>
 </div>
 
@@ -12,262 +13,399 @@
   <el-row type="flex">
     筛选
     <el-select v-model="filterform.companyids" filterable placeholder="请选择公司" multiple size="small" class="ml-2">
-      <el-option
-        v-for="item in companies"
-        :key="item.id"
-        :label="item.name"
-        :value="item.id">
+      <el-option v-for="item in companies" :key="item.id" :label="item.name" :value="item.id">
       </el-option>
     </el-select>
   </el-row>
-  <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%"
-  @selection-change="handleSelectionChange" height="500">
-  <el-table-column type="selection" width="55">
-  </el-table-column>
-  <el-table-column prop="storeid" label="门店编号" width="200" sortable>
-  </el-table-column>
-  <el-table-column prop="storename" label="门店名称" width="200">
-  </el-table-column>
-  <el-table-column prop="storeadd" label="门店地址" width="200">
-  </el-table-column>
-  <el-table-column prop="company" label="所属公司" width="120">
-  </el-table-column>
-  <el-table-column label="保修截止日期" show-overflow-tooltip sortable>
-    <template slot-scope="scope">[[ scope.row.endingtime ]]</template>
-  </el-table-column>
-  <el-table-column prop="endingday" label="剩余天数" width="120" sortable>
-  </el-table-column>
-  <el-table-column label="添加日期" show-overflow-tooltip sortable>
-    <template slot-scope="scope">[[ scope.row.inserttime ]]</template>
-  </el-table-column>
-  <el-table-column label="修改日期" show-overflow-tooltip sortable>
-    <template slot-scope="scope">[[ scope.row.modifytime ]]</template>
-  </el-table-column>
-  <el-table-column prop="status_cn" label="当前状态" width="120" sortable :filters="statustags" :filter-method="filterStatus"
-    filter-placement="bottom-end">
-  </el-table-column>
-  <el-table-column label="操作" width="160">
-    <template slot-scope="scope">
-      <template v-for="opt in scope.row.operations">
-        <template v-if='"close" == opt'>
-          <el-button size="mini" type="danger" @click="closeRecord(scope.$index, scope.row)">关闭</el-button>
-        </template>
-        <template v-if='"modify" == opt'>
-          <el-button size="mini" type="success" @click="modifyRecord(scope.$index, scope.row)">修改</el-button>
-        </template>
+  <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 98%"
+    @selection-change="handleSelectionChange" :height="height" stripe>
+    <el-table-column type="selection" width="55">
+    </el-table-column>
+    <el-table-column prop="code" label="门店编号" width="120" sortable>
+    </el-table-column>
+    <el-table-column prop="name" label="门店名称" width="200">
+    </el-table-column>
+    <el-table-column prop="addr" label="门店地址" width="200">
+    </el-table-column>
+    <el-table-column prop="company" label="所属公司" width="120">
+    </el-table-column>
+    <el-table-column prop="beginday" label="保修开始日期" width="200" show-overflow-tooltip sortable>
+    </el-table-column>
+    <el-table-column prop="period" label="保修期限(月)" width="120">
+    </el-table-column>
+    <el-table-column prop="leftday" label="剩余天数" width="120" sortable>
+    </el-table-column>
+    <el-table-column prop="created_time" label="添加日期" width="200" show-overflow-tooltip sortable>
+    </el-table-column>
+    <el-table-column prop="updated_time" label="修改日期" width="200" show-overflow-tooltip sortable>
+    </el-table-column>
+    <el-table-column prop="status_cn" label="当前状态" width="120" sortable :filters="statustags"
+      :filter-method="filterStatus" filter-placement="bottom-end">
+    </el-table-column>
+    <el-table-column label="操作" width="160">
+      <template slot-scope="scope">
+        <el-button size="mini" type="danger" @click="closeRecord(scope.$index, scope.row)">关闭</el-button>
+        <el-button size="mini" type="success" @click="modifyRecord(scope.$index, scope.row)">修改</el-button>
       </template>
-    </template>
-  </el-table-column>
-</el-table>
+    </el-table-column>
+  </el-table>
 
-<!--  添加门店信息 -->
-<el-dialog :title="form.title" :visible.sync="addVisible" width="30%" >
-  <el-form :model="form" :rules="rules" ref="form">
-    <el-form-item label="门店名称" :label-width="formLabelWidth" prop="storename">
-      <el-input v-model="form.storename" autocomplete="off"></el-input>
-    </el-form-item>
-    <el-form-item label="门店地址" :label-width="formLabelWidth" prop="storeadd">
-      <el-input v-model="form.storeadd" autocomplete="off"></el-input>
-    </el-form-item>
-    <el-form-item label="公司选择" :label-width="formLabelWidth" prop="company">
-      <el-select v-model="form.company" placeholder="请选择门店所属公司" >
-        <el-option 
-        v-for="item in companies"
-        :key="item.id"
-        :label="item.name"
-        :value="item.id"></el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="保修截止日期" :label-width="formLabelWidth" prop="endingtime">
-      <el-date-picker type="date" placeholder="选择日期" v-model="form.endingtime" style="width: 100%;"></el-date-picker>
-    </el-form-item>
-  </el-form>
-  <span slot="footer" class="dialog-footer">
-    <el-button @click="addVisible = false">取消</el-button>
-    <el-button type="danger" @click="submitForm('form')">确认[[form.active]]</el-button>
-  </span>
-</el-dialog>
+  <!--  添加门店信息 -->
+  <el-dialog :title="form.title" :visible.sync="addVisible" width="30%">
+    <el-form :model="form" :rules="rules" ref="form">
+      <el-form-item label="门店名称" :label-width="formLabelWidth" prop="name">
+        <el-input v-model="form.name" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="门店地址" :label-width="formLabelWidth" prop="addr">
+        <el-input v-model="form.addr" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="公司选择" :label-width="formLabelWidth" prop="company">
+        <el-select v-model="form.company" placeholder="请选择门店所属公司">
+          <el-option v-for="item in companies" :key="item.id" :label="item.name" :value="item.id"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="保修开始日期" :label-width="formLabelWidth" prop="beginday">
+        <el-date-picker type="date" placeholder="选择日期" v-model="form.beginday" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+      </el-form-item>
+      <el-form-item label="保修期(月)" :label-width="formLabelWidth" prop="period">
+        <el-slider v-model="form.period" show-input></el-slider>
+      </el-form-item>
+    </el-form>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="addVisible = false">取消</el-button>
+      <template v-if="form.active == '添加'">
+        <el-button type="primary" @click="submitForm('form')">确认[[form.active]]</el-button>
+      </template>
+      <template v-if="form.active == '修改'">
+        <el-button type="primary" @click="updateForm('form')">确认[[form.active]]</el-button>
+      </template>
+      <template v-if="form.active == '删除'">
+        <el-button type="danger" @click="deleteForm('form')">确认[[form.active]]</el-button>
+      </template>
+    </span>
+  </el-dialog>
 
-<!--  批量删除 -->
-<el-dialog title="批量删除提示" :visible.sync="delAllVisible" width="30%" >
-  <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
-  <span slot="footer" class="dialog-footer">
-    <el-button @click="delAllVisible = false">取消</el-button>
-    <el-button type="danger" >确认删除</el-button>
-  </span>
-</el-dialog>
+  <!--  批量删除 -->
+  <el-dialog title="批量删除提示" :visible.sync="delAllVisible" width="30%">
+    <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="delAllVisible = false">取消</el-button>
+      <el-button type="danger">确认删除</el-button>
+    </span>
+  </el-dialog>
 
-<!--    单行关闭  -->
-<el-dialog title="删除提示" :visible.sync="closeVisible" width="40%" >
-  <el-form :data="closeForm" label-width="100px" >
-    <el-row >
-      <el-col :span="12">
-        <el-form-item label="门店编号" prop="storeid">
-          [[closeForm.storeid]]
-        </el-form-item>
-      </el-col>
-      <el-col :span="12">
-        <el-form-item label="门店名称" prop="storename" >
-          [[closeForm.storename]]
-        </el-form-item>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="12">
-        <el-form-item label="所属公司" prop="company" >
-          [[closeForm.company]]
-        </el-form-item>        
-      </el-col>
-      <el-col :span="12">
-        <el-form-item label="保修截止日期" prop="endingtime" >
-          [[closeForm.endingtime]]
-        </el-form-item>  
-      </el-col>
-    </el-row>
-  </el-form>
-  <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
-  <span slot="footer" class="dialog-footer">
-    <el-button @click="repairVisible = false">取消</el-button>
-    <el-button type="danger" >确认提交</el-button>
-  </span>
-</el-dialog>
+  <!--    单行关闭  -->
+  <el-dialog title="删除提示" :visible.sync="closeVisible" width="40%">
+    <el-form :data="closeForm" label-width="100px">
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="门店编号" prop="storeid">
+            [[closeForm.storeid]]
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="门店名称" prop="storename">
+            [[closeForm.storename]]
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="所属公司" prop="company">
+            [[closeForm.company]]
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="保修截止日期" prop="endingtime">
+            [[closeForm.endingtime]]
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+    <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="repairVisible = false">取消</el-button>
+      <el-button type="danger">确认提交</el-button>
+    </span>
+  </el-dialog>
 
 </div>
 {{ end}}
 
 {{define "main_script"}}
 <script>
-  $.getJSON("http://localhost:3000/api/v1/stores")
-    .then((ret) => {
-      new Vue({
-        el: "#app",
-        delimiters: ['[[', ']]'],
-        data: Object.assign({
-          websocketDisconnected: false,
-          stores: [],
-          statustags: [],
-          companies: [],
-          filterform: {
-            companyids: [],
-            options: [],
-          },
-          sels:[],
-          //添加按钮弹出框
-          addVisible:false,
-          form: {
-            title:"添加门店",
-            active:"添加",
-            storename: '',
-            storeadd: '',
-            endingtime: '',
-            company: ''
-          },
-          rules:{
-            storename:[
-              {required:true,message:"请填写门店名称",trigger:"blur"},
-            ],
-            storeadd:[
-              {required:true,message:"请填写门店地址",trigger:"blur"}
-            ],
-            company: [
-              {required: true, message: '请至少选择一个负责公司', trigger: 'change' }
-            ],
-            endingtime:[
-              {required: true, message: "请选择保修截止日期", type: "date",trigger:"change"}
-            ]
-          },
-          //批量删除对话框弹出
-          delAllVisible:false,
-          //单行关闭对话框弹出
-          closeVisible:false,
-          //设置form用于进行添加的时候绑定值
-          closeForm:{},
-          modifyForm:{},
-          currentIndex:[],
-          formLabelWidth: '120px',
-        }, {
-          "stores": ret.stores,
-          "companies": ret.companies,
-          "statustags": ret.status
-        }),
-        computed: {
-          tableData() {
-            let stores = this.stores.map(r => {
-              return Object.assign(r, this.storeConvert(r))
-            })
-
-            if (this.filterform.companyids.length <= 0) {
-              return stores;
-            }
-            stores = this.stores.filter(r => {
-            //  return this.filterform.storeids.some(s => r.storeid.includes(s));
-            for(var i = 0 ; i < this.filterform.companyids.length ; i++){
-              if ( this.filterform.companyids[i] == r.companyid) {
-                return r
-              }
-            }
-            });
-            return stores;
-          }
+  function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+      var c = ca[i].trim();
+      if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+    }
+    return "";
+  }
+  uid = getCookie("uid");
+  token = getCookie("token");
+  app = new Vue({
+    el: "#app",
+    delimiters: ['[[', ']]'],
+    data: Object.assign({
+      websocketDisconnected: false,
+      stores: [],
+      statustags: [],
+      companies: [],
+      filterform: {
+        companyids: [],
+        options: [],
+      },
+      sels: [],
+      //添加按钮弹出框
+      addVisible: false,
+      form: {
+        title: "添加门店",
+        active: "添加",
+        name: '',
+        addr: '',
+        beginday: '',
+        period: 0,
+        company: '',
+        code: '',
+      },
+      rules: {
+        name: [{
+          required: true,
+          message: "请填写门店名称",
+          trigger: "blur"
+        }, ],
+        company: [{
+          required: true,
+          message: '请至少选择一个负责公司',
+          trigger: 'change'
+        }],
+        beginday: [{
+          required: true,
+          message: "请选择保修截止日期",
+          type: "date",
+          trigger: "change"
+        }]
+      },
+      //批量删除对话框弹出
+      delAllVisible: false,
+      //单行关闭对话框弹出
+      closeVisible: false,
+      //设置form用于进行添加的时候绑定值
+      closeForm: {},
+      modifyForm: {},
+      currentIndex: [],
+      formLabelWidth: '120px',
+      height: null,
+    }),
+    mounted: function () {
+      this.height = window.innerHeight - this.$refs.multipleTable.$el.offsetTop - 50
+      url = "{{.Site.Params.jsonURL}}/api/v1/stores"
+      $.ajax({
+        url: url,
+        method: "get",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset:UTF-8",
+          "uid": uid,
+          "token": token,
+          "platform": "pc",
         },
-        methods: {
-          storeConvert(store) {
-            if (store.status == 1) {
-              return {
-                order: 1,
-                status_cn: "施工中"
-              }
-            } else if (store.status == 2) {
-              return {
-                order: 2,
-                status_cn: "保修中"
-              }
-            } else if (store.status == 3) {
-              return {
-                order: 3,
-                status_cn: "出保中"
-              }
-            } 
-          },
-          handleSelectionChange(sels) {
-            this.sels = sels ,
-            console.log()
-          },
-          filterStatus(value, row) {
-            return row.status === value
-          },
-          filterRecord(value) {
-
-          },
-          //验证是否能能成功提交对话框
-          submitForm(formName){
-            this.$refs[formName].validate((valid) => {
-              if (valid) {
-                alert('submit!');
-              } else {
-                console.log('error submit!!');
-                return false;
-              }
-            });
-          },
-          // 增加数据的方式,将这些值增加到单行删除按钮对话框中
-          closeRecord(index , row){
-          //将表格中的数据传递到对话框
-            this.closeForm = this.tableData[index];
-            this.currentIndex = index;
-            this.closeVisible = true;
-          },
-          // 增加数据的方式,将这些值增加到单行修改按钮对话框中
-          modifyRecord(index , row){
-            //将表格中的数据传递到对话框
-              this.form = this.tableData[index];
-              this.currentIndex = index;
-              this.addVisible = true;
-              this.form.title = "修改信息";
-              this.form.active = "修改";
-          },
-        }
+        data: {},
+      }).then(ret => {
+        this.stores = ret.datas;
+        this.statustags = ret.status;
       })
-    })
+      url = "{{.Site.Params.jsonURL}}/api/v1/companies"
+      $.ajax({
+        url: url,
+        method: "get",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset:UTF-8",
+          "uid": uid,
+          "token": token,
+          "platform": "pc",
+        },
+        data: {},
+      }).then(ret => {
+        this.companies = ret.datas;
+      })
+    },
+    computed: {
+      tableData() {
+        let stores = this.stores.map(r => {
+          return Object.assign(r, this.storeConvert(r))
+        })
+
+        if (this.filterform.companyids.length <= 0) {
+          return stores;
+        }
+        stores = this.stores.filter(r => {
+          //  return this.filterform.storeids.some(s => r.storeid.includes(s));
+          for (var i = 0; i < this.filterform.companyids.length; i++) {
+            if (this.filterform.companyids[i] == r.companyid) {
+              return r
+            }
+          }
+        });
+        return stores;
+      }
+    },
+    methods: {
+      storeConvert(store) {
+        if (store.status == 1) {
+          return {
+            order: 1,
+            status_cn: "施工中"
+          }
+        } else if (store.status == 2) {
+          return {
+            order: 2,
+            status_cn: "保修中"
+          }
+        } else if (store.status == 3) {
+          return {
+            order: 3,
+            status_cn: "出保中"
+          }
+        }
+      },
+      handleSelectionChange(sels) {
+        this.sels = sels,
+          console.log()
+      },
+      filterStatus(value, row) {
+        return row.status === value
+      },
+      filterRecord(value) {
+
+      },
+      //验证是否能能成功提交对话框
+      submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            url = "{{.Site.Params.jsonURL}}/api/v1/stores"
+            $.ajax({
+              url: url,
+              method: "post",
+              headers: {
+                uid: uid,
+                token: token,
+                platform: "pc",
+              },
+              contentType: 'application/x-www-form-urlencoded',
+              data: JSON.stringify({
+                "name": this.form.name,
+                "addr": this.form.addr,
+                "company": this.form.company,
+                "begintime": this.form.beginday,
+                "period": this.form.period,
+              })
+            }).then(ret => {
+              //console.log(ret);
+              this.stores.push(ret.datas);
+              this.$message({
+                message: '添加门店信息成功',
+                type: 'success'
+              });
+              this.form = {};
+              this.addVisible = false;
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      updateForm(formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            url = "{{.Site.Params.jsonURL}}/api/v1/stores/" + this.form.code
+            $.ajax({
+              url: url,
+              method: "put",
+              headers: {
+                uid: uid,
+                token: token,
+                platform: "pc",
+              },
+              contentType: 'application/x-www-form-urlencoded',
+              data: JSON.stringify({
+                "name": this.form.name,
+                "addr": this.form.addr,
+                "company": this.form.company,
+                "begintime": this.form.beginday,
+                "period": this.form.period,
+              })
+            }).then(ret => {
+              console.log(ret);
+              //this.tableData[this.currentIndex] =ret.datas;
+              for (var i = 0, len = this.stores.length; i < len; i++) {
+                if (this.stores[i].code === ret.datas.code) {
+                  this.stores[i] = ret.datas;
+                  this.$set(this.stores, i, this.stores[i]);
+                  break;
+                }
+              }
+              this.$message({
+                message: '修改门店信息成功',
+                type: 'success'
+              });
+              this.addVisible = false;
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      deleteForm(formName){
+        url ="{{.Site.Params.jsonURL}}/api/v1/stores/" + this.form.code;
+        $.ajax({
+          url: url,
+          method: "delete",
+          headers: {
+            uid: uid,
+            token: token,
+            platform: "pc",
+          },
+          contentType: 'application/x-www-form-urlencoded',
+          data: {}
+        }).then(ret =>{
+          //console.log(ret)
+          this.stores = this.stores.filter(t => t.code != ret.datas.code);
+          this.addVisible = false;
+        })
+      },
+      // 增加数据的方式,将这些值增加到单行删除按钮对话框中
+      closeRecord(index, row) {
+        //将表格中的数据传递到对话框
+        this.form.name = row.name;
+        this.form.addr = row.addr;
+        this.form.beginday = new Date(Date.parse(row.beginday.replace(/-/g,   "/")));
+        this.form.period = row.period;
+        this.form.company = row.companyid;
+        this.form.code = row.code;
+        this.currentIndex = index;
+        this.addVisible = true;
+        this.form.title = "删除信息";
+        this.form.active = "删除";
+      },
+      // 增加数据的方式,将这些值增加到单行修改按钮对话框中
+      modifyRecord(index, row) {
+        //将表格中的数据传递到对话框
+        this.form.name = row.name;
+        this.form.addr = row.addr;
+        this.form.beginday = new Date(Date.parse(row.beginday.replace(/-/g,   "/")));
+        this.form.period = row.period;
+        this.form.company = row.companyid;
+        this.form.code = row.code;
+        this.currentIndex = index;
+        this.addVisible = true;
+        this.form.title = "修改信息";
+        this.form.active = "修改";
+      },
+    },
+  })
 </script>
 {{ end }}
