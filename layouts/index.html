@@ -1,2 +1,101 @@
 {{ define "main"}}
+<div class="login">
+  <el-card>
+    <h2>登 录</h2>
+    <el-form class="login-form" :model="model" :rules="rules" ref="model">
+      <el-form-item prop="username">
+        <el-input v-model="model.username" placeholder="请输入用户名" prefix-icon="fas fa-user"></el-input>
+      </el-form-item>
+      <el-form-item prop="password">
+        <el-input v-model="model.password" placeholder="请输入密码" type="password" prefix-icon="fas fa-lock"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button :loading="loading" class="login-button" type="primary" @click="onLogin('model')">登 录</el-button>
+      </el-form-item>
+      <a class="forgot-password" href="https://oxfordinformatics.com/">Forgot password ?</a>
+    </el-form>
+  </el-card>
+</div>
+
 {{ end}}
+
+{{ define "main_script" }}
+<script>
+  new Vue({
+    el: "#app",
+    delimiters: ['[[', ']]'],
+    data() {
+      return {
+        validCredentials: {
+          username: "lightscope",
+          password: "lightscope"
+        },
+        model: {
+          username: "",
+          password: ""
+        },
+        loading: false,
+        rules: {
+          username: [{
+              required: true,
+              message: "必须输入用户名",
+              trigger: "blur"
+            },
+            {
+              min: 4,
+              message: "用户名不少于5个字符",
+              trigger: "blur"
+            }
+          ],
+          password: [{
+              required: true,
+              message: "必须输入密码",
+              trigger: "blur"
+            },
+            {
+              min: 5,
+              message: "Password length should be at least 5 characters",
+              trigger: "blur"
+            }
+          ]
+        }
+      };
+    },
+    methods: {
+      onLogin(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let url = "{{ .Site.Params.jsonUrl }}" + "/api/v1/users/login";
+            $.ajax({
+              url: url,
+              method: "post",
+              contentType: 'application/x-www-form-urlencoded',
+              //contentType: "application/json",
+              data: JSON.stringify({
+                "username": this.model.username,
+                "password": this.model.password,
+              }),
+            }).then(ret => {
+              if (ret.code == 200) {
+                let d = new Date();
+                d.setTime(d.getTime() + 1 * 24 * 60 * 60 * 1000);
+                this.$cookies.set("uid", ret.datas.uid, d.toUTCString, "/");
+                this.$cookies.set("token", ret.datas.token, d.toUTCString, "/");
+                let hpage = this.$cookies.get("historypage");
+                if (hpage == null || hpage == "") {
+                  hpage = '{{with .Site.GetPage "/dashboard/"}}{{ .Permalink }}{{  end }}';
+                }
+                window.location.replace(hpage);
+              }
+            });
+            console.log('submit!');
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      }
+    }
+  })
+</script>
+{{ end }}
