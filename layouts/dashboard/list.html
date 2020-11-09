@@ -1,0 +1,75 @@
+{{ define "main" }}
+<el-row :gutter="12" style="padding-top:50px">
+  <el-col :span="3" :offset="2">
+    <el-card shadow="always" :body-style="{background:'#abcdef',color:'#7a8a9a'}">
+      受理中：[[ countdatas.created]]
+    </el-card>
+  </el-col>
+  <el-col :span="3">
+    <el-card shadow="always" :body-style="{background:'#bedcaf',color:'#7a8a9a'}">
+      分派中：[[ countdatas.accepted]]
+    </el-card>
+  </el-col>
+  <el-col :span="3">
+    <el-card shadow="always" :body-style="{background:'#cafedb',color:'#7a8a9a'}">
+      维修中: [[ countdatas.assigned]]
+    </el-card>
+  </el-col>
+  <el-col :span="3">
+    <el-card shadow="always" :body-style="{background:'#abcdef',color:'#7a8a9a'}">
+      验收中: [[ countdatas.serviced]]
+    </el-card>
+  </el-col>
+  <el-col :span="3">
+    <el-card shadow="always" :body-style="{background:'#abcdef',color:'#7a8a9a'}">
+      已完成: [[ countdatas.confirmed + countdatas.finished]]
+    </el-card>
+  </el-col>
+  <el-col :span="3">
+    <el-card shadow="always" :body-style="{background:'#abcdef',color:'#7a8a9a'}">
+      已关闭: [[ countdatas.closed]]
+    </el-card>
+  </el-col>
+</el-row>
+{{ end }}
+
+{{ define "main_script"}}
+<script>
+  function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+      var c = ca[i].trim();
+      if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+    }
+    return "";
+  }
+  uid = getCookie("uid");
+  token = getCookie("token");
+  app = new Vue({
+    el: "#app",
+    delimiters: ['[[', ']]'],
+    data() {
+      return {
+        countdatas: [],
+      };
+    },
+    mounted: function () {
+      url = "{{.Site.Params.jsonURL}}/api/v1/repairs/count"
+      $.ajax({
+        url: url,
+        method: "get",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset:UTF-8",
+          "uid": uid,
+          "token": token,
+          "platform": "pc",
+        },
+        data: {},
+      }).then(ret => {
+        this.countdatas = ret.datas;
+      })
+    },
+  })
+</script>
+{{ end }}

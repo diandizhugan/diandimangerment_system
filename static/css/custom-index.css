@@ -1,0 +1,46 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: #102a43;
+  background-size: contain;
+}
+
+#app {
+  text-align: center;
+  color: #2c3e50;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.login {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-button {
+  width: 100%;
+  margin-top: 40px;
+}
+
+.login-form {
+  width: 290px;
+}
+
+.forgot-password {
+  margin-top: 10px;
+}
+
+.login .el-card {
+  padding-top: 0;
+  padding-bottom: 30px;
+}
+
+.login .el-card {
+  width: 340px;
+  display: flex;
+  justify-content: center;
+}
