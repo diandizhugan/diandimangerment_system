@@ -19,20 +19,20 @@
     </el-select>
   </el-row>
   <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%"
-    @selection-change="handleSelectionChange" :height="height" stripe v-loading="loading">
+    @selection-change="handleSelectionChange" :height="height" stripe v-loading="loading" :header-cell-style="{background:'#eef1f6',color:'#606266'}">
 
     <el-table-column type="selection" width="55">
     </el-table-column>
-    <el-table-column prop="status_cn" label="当前状态" width="120" sortable :filters="statustags"
+    <el-table-column prop="status_cn" label="状态" width="120" sortable :filters="statustags"
       :filter-method="filterStatus" filter-placement="bottom-end">
     </el-table-column>
-    <el-table-column prop="data.base.code" label="报修单号" width="200" sortable>
+    <el-table-column prop="base.code" label="报修单号" width="140" sortable>
     </el-table-column>
-    <el-table-column prop="data.base.storename" label="门店名称" width="200" sortable>
+    <el-table-column prop="base.storename" label="门店名称" width="200" sortable>
     </el-table-column>
-    <el-table-column prop="data.base.companyname" label="所属公司" width="120">
+    <el-table-column prop="base.companyname" label="所属公司" width="120">
     </el-table-column>
-    <el-table-column prop="data.base.content" label="报修内容" width="200">
+    <el-table-column prop="base.content" label="报修内容" width="200">
     </el-table-column>
     <el-table-column type="expand">
       <template slot-scope="scope">
@@ -55,19 +55,17 @@
         </el-form>
       </template>
     </el-table-column>
-    <el-table-column prop="data.operation_time.created" label="报修时间" show-overflow-tooltip sortable>
+    <el-table-column prop="operation_time.created" label="报修时间" show-overflow-tooltip sortable width="200">
     </el-table-column>
-    <el-table-column prop="data.operation_time.accepted" label="受理时间" show-overflow-tooltip sortable>
+    <el-table-column prop="operation_time.accepted" label="受理时间" show-overflow-tooltip sortable width="200">
     </el-table-column>
-    <el-table-column prop="data.operation_time.assigned" label="派发时间" show-overflow-tooltip sortable>
+    <el-table-column prop="operation_time.assigned" label="分派时间" show-overflow-tooltip sortable width="200">
     </el-table-column>
-    <el-table-column prop="data.operation_time.serviced" label="维修时间" show-overflow-tooltip sortable>
+    <el-table-column prop="operation_time.serviced" label="维修时间" show-overflow-tooltip sortable width="200">
     </el-table-column>
-    <el-table-column prop="data.operation_time.confirmed" label="验收时间" show-overflow-tooltip sortable>
+    <el-table-column prop="operation_time.confirmed" label="验收/完成时间" show-overflow-tooltip sortable width="200">
     </el-table-column>
-    <el-table-column prop="data.operation_time.finished" label="完成时间" show-overflow-tooltip sortable>
-    </el-table-column>
-    <el-table-column label="操作" width="160">
+    <!--<el-table-column label="操作" width="160">
       <template slot-scope="scope">
         <template v-for="opt in scope.row.operations">
           <template v-if='"close" == opt'>
@@ -87,7 +85,7 @@
           </template>
         </template>
       </template>
-    </el-table-column>
+    </el-table-column>-->
   </el-table>
 
   <el-dialog title="批量删除提示" :visible.sync="delAllVisible" width="30%">
@@ -191,7 +189,7 @@
     mounted: function () {
 
       this.height = window.innerHeight - this.$refs.multipleTable.$el.offsetTop - 50
-      url = "{{.Site.Params.jsonURL}}/api/v1/repairs/pc"
+      url = "{{.Site.Params.jsonURL}}/api/v1/repairs"
       $.ajax({
         url: url,
         method: "get",
@@ -202,7 +200,7 @@
           "platform": "pc",
         },
         data: {
-          "statuscode": "all",
+          "stepcode": "all",
         },
       }).then(ret => {
         this.records = ret.datas.repairs;

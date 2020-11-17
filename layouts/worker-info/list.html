@@ -11,7 +11,7 @@
 
 <div class="div-default ml-2">
   <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%"
-    @selection-change="handleSelectionChange" :height="height" id="tableData" stripe>
+    @selection-change="handleSelectionChange" :height="height" id="tableData" stripe :header-cell-style="{background:'#eef1f6',color:'#606266'}">
     <el-table-column type="selection" width="55">
     </el-table-column>
     <el-table-column prop="company" label="公司名称" width="120">
@@ -464,11 +464,14 @@
           },
           data: {},
         }).then(ret => {
-          let data = [];
-          for (let i = 0; i < ret.datas.length; i++) {
-            data.push(ret.datas[i].code);
+          if (ret.datas != null){
+            let data = [];
+            for (let i = 0; i < ret.datas.length; i++) {
+              data.push(ret.datas[i].code);
+            }
+            this.selectStore = data;
           }
-          this.selectStore = data;
+
         })
         this.storesVisible = true;
       },
@@ -492,7 +495,7 @@
         }).then(ret => {
           for (var i = 0, len = this.employees.length; i < len; i++) {
             if (this.employees[i].id === this.storeform.userid) {
-              this.employees[i].storenum = ret.datas.storesnum;
+              this.employees[i].storenum = ret.datas.storenum;
               this.$set(this.employees, i, this.employees[i]);
               break;
             }

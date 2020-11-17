@@ -1,5 +1,5 @@
 <div id="top-menu" style="background-color:#545c64">
-  <el-row>
+  <el-row type="flex" justify="space-between">
     <el-col :span="16">
       <el-menu :default-active="activeIndex2" class="el-menu-demo" mode="horizontal" @select="handleSelect"
         background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" unique-opened>
@@ -20,22 +20,32 @@
         {{ end }}
       </el-menu>
     </el-col>
-    <el-col :span="8">
-      <el-menu :default-active="activeIndex3" class="el-menu-demo" mode="horizontal" @select="handleSelect"
-        background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" unique-opened>
-        {{ range .Site.Menus.right }}
-        {{ if .HasChildren }}
-        <el-submenu index="{{ .URL }}">
-          <template slot="title">{{ .Name }}</template>
-          {{ range .Children}}
-          <el-menu-item index="{{ .URL }}"> {{ .Name }}</el-menu-item>
-          {{ end }}
-        </el-submenu>
-        {{ else }}
-        <el-menu-item index="{{ .URL }}">{{ .Name }}</el-menu-item>
-        {{ end }}
-        {{ end }}
-      </el-menu>
+    <el-col :span="4" style="text-align:right">
+      <!--<el-row>
+        <el-col :span="6">
+          <div class="block">
+            <el-avatar size="small" :src="circleUrl" class="img-fluid">admin</el-avatar>
+          </div>
+        </el-col>
+        <el-col :span="18">
+          <el-menu :default-active="activeIndex3" class="el-menu-demo" mode="horizontal" @select="handleRightSelect"
+            background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" unique-opened>
+            {{ range .Site.Menus.right }}
+            {{ if .HasChildren }}
+            <el-submenu index="{{ .URL }}">
+              <template slot="title">{{ .Name }}</template>
+              {{ range .Children}}
+              <el-menu-item index="{{ .URL }}"> {{ .Name }}</el-menu-item>
+              {{ end }}
+            </el-submenu>
+            {{ else }}
+            <el-menu-item index="{{ .URL }}">{{ .Name }}</el-menu-item>
+            {{ end }}
+            {{ end }}
+          </el-menu>
+        </el-col>
+      </el-row>-->
+
     </el-col>
   </el-row>
 </div>
@@ -46,7 +56,9 @@
     delimiters: ['[[', ']]'],
     data: {
       activeIndex2: a,
+      activeIndex3: "",
       username: "",
+      circulUrl: "",
     },
     mounted: function () {
       this.$cookies.set("historypage", "{{ .Page.Permalink }}");
@@ -57,17 +69,17 @@
         window.location.replace("/");
       } else {
         $.ajax({
-          url: "{{ .Site.Params.jsonUrl }}" + "/api/v1/users/checktoken",
-          method: "post",
+          url: "{{ .Site.Params.jsonUrl }}" + "/api/v1/users/" +uid + "/detail",
+          method: "get",
           contentType: 'application/x-www-form-urlencoded;charset:UTF-8',
           data: {},
           headers: {
             uid: uid,
-            token:token,
+            token: token,
             platform: "pc",
           }
         }).then(ret => {
-          if (ret.code == 200){
+          if (ret.code == 200) {
             this.username = ret.datas.username;
           }
           if (ret.code != 200) {
@@ -82,6 +94,9 @@
       handleSelect(key, keyPath) {
         console.log(key, keyPath);
         window.location.replace(key);
+      },
+      handleRightSelect(key,keyPath){
+        window.location.replace(key); 
       }
     }
   })

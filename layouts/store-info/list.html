@@ -18,7 +18,7 @@
     </el-select>
   </el-row>
   <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 98%"
-    @selection-change="handleSelectionChange" :height="height" stripe>
+    @selection-change="handleSelectionChange" :height="height" stripe :header-cell-style="{background:'#eef1f6',color:'#606266'}">
     <el-table-column type="selection" width="55">
     </el-table-column>
     <el-table-column prop="code" label="门店编号" width="120" sortable>
@@ -39,9 +39,9 @@
     </el-table-column>
     <el-table-column prop="updated_time" label="修改日期" width="200" show-overflow-tooltip sortable>
     </el-table-column>
-    <el-table-column prop="status_cn" label="当前状态" width="120" sortable :filters="statustags"
+    <!--<el-table-column prop="status_cn" label="当前状态" width="120" sortable :filters="statustags"
       :filter-method="filterStatus" filter-placement="bottom-end">
-    </el-table-column>
+    </el-table-column>-->
     <el-table-column label="操作" width="160">
       <template slot-scope="scope">
         <el-button size="mini" type="danger" @click="closeRecord(scope.$index, scope.row)">关闭</el-button>
@@ -65,7 +65,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="保修开始日期" :label-width="formLabelWidth" prop="beginday">
-        <el-date-picker type="date" placeholder="选择日期" v-model="form.beginday" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+        <el-date-picker type="date" placeholder="选择日期" v-model="form.beginday" style="width: 100%;"></el-date-picker>
       </el-form-item>
       <el-form-item label="保修期(月)" :label-width="formLabelWidth" prop="period">
         <el-slider v-model="form.period" show-input></el-slider>

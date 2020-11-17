@@ -18,7 +18,7 @@
     </el-select>
   </el-row>
   <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 98%"
-    @selection-change="handleSelectionChange" :height="height" stripe>
+    @selection-change="handleSelectionChange" :height="height" stripe :header-cell-style="{background:'#eef1f6',color:'#606266'}">
     <el-table-column type="selection" width="55">
     </el-table-column>
     <el-table-column prop="company" label="公 司" width="120" sortable>
