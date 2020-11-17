@@ -1,21 +1,20 @@
-baseURL = "http://example.org/"
+baseURL = "http://repairsystem.yeecoming.com/"
 languageidentifier = "en-us"
-title = "点滴智能管理平台"
+title = "小奕智能管理平台"
 
 #################### default parameters ################################
 [params]
 logo = "images/logo.png"
 home = "首页"
-jsonURL = "http://localhost:3000"
+jsonURL = "http://localhost:3001"
 
-
+#jsonURL = "https://api.repairsystem.yeecoming.com"
 ############################## navigation ###############################
 # main menu
 [[menu.main]]
-name = "保修记录"
+name = "报修记录"
 URL = "/record/"
 weight = 1
-
 
 [[menu.main]]
 name = "客户信息"
@@ -23,38 +22,62 @@ weight = 2
 hasChildren = true
 URL = "/client"
 
-  [[menu.main]]
-  parent = "客户信息"
-  name = "公司信息"
-  URL = "/company-info/"
-  
+[[menu.main]]
+parent = "客户信息"
+name = "公司信息"
+weight = 1
+URL = "/company-info/"
 
-  [[menu.main]]
-  parent = "客户信息"
-  name = "门店信息"
-  URL = "/store-info/"
- 
+[[menu.main]]
+parent = "客户信息"
+name = "门店信息"
+weight = 2
+URL = "/store-info/"
 
-  [[menu.main]]
-  parent = "客户信息"
-  name = "人员信息"
-  URL = "/person-info/"
-  
+[[menu.main]]
+parent = "客户信息"
+name = "人员信息"
+weight = 3
+URL = "/person-info/"
 
 [[menu.main]]
 weight = 3
-name = "系统信息"
+name = "基本信息"
 hasChildren = true
 URL = "/system-info/"
 
-  [[menu.main]]
-  parent = "系统信息"
-  name = "员工信息"
-  URL = "/worker-info/"
+[[menu.main]]
+parent = "基本信息"
+name = "员工信息"
+URL = "/worker-info/"
 
-  [[menu.main]]
-  parent = "系统信息"
-  name = "角色信息"
-  URL = "/job-info/"
+## [[menu.main]]
+# parent = "基本信息"
+# name = "角色信息"
+# URL = "/job-info/"
+[[menu.right]]
+weight = 1
+name = "登录"
+hasChildren = true
+URL = "/login"
 
+[[menu.right]]
+parent = "登录"
+name = "修改信息"
+URL = "/myinfo/"
 
+[[menu.right]]
+parent = "登录"
+name = "退出登录"
+URL = "/logout/"
+
+[[menu.right]]
+weight = 2
+name = "系统配置"
+hasChildren = true
+URL = "/system"
+
+[[menu.right]]
+parent = "系统配置"
+name = "用户信息"
+URL = "/user-info/"
