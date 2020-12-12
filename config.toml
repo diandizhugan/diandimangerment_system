@@ -15,12 +15,16 @@ jsonURL = "http://localhost:3001"
 name = "报修记录"
 URL = "/record/"
 weight = 1
+  [menu.main.params]
+    icon ="el-icon-s-order"
 
 [[menu.main]]
 name = "客户信息"
 weight = 2
 hasChildren = true
 URL = "/client"
+  [menu.main.params]
+    icon ="el-icon-s-custom"
 
 [[menu.main]]
 parent = "客户信息"
@@ -45,11 +49,18 @@ weight = 3
 name = "基本信息"
 hasChildren = true
 URL = "/system-info/"
+  [menu.main.params]
+    icon ="el-icon-s-operation"
 
 [[menu.main]]
 parent = "基本信息"
 name = "员工信息"
 URL = "/worker-info/"
+
+[[menu.main]]
+parent = "基本信息"
+name= "基本设置"
+URL = "/"
 
 ## [[menu.main]]
 # parent = "基本信息"
