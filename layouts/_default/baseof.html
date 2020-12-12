@@ -1,3 +1,12 @@
+<!--
+ * @Description: 
+ * @Version: 
+ * @Company: Dank
+ * @Author: dank.zheng
+ * @Date: 2020-10-26 07:35:17
+ * @LastEditors: dank.zheng
+ * @LastEditTime: 2020-12-10 09:59:23
+-->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +16,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>{{$.Site.Title}} - {{ .Title }}</title>
 
-  
+
   <link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.2/lib/theme-chalk/index.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/custom.css">
@@ -25,11 +34,97 @@
 </head>
 
 <body>
-  {{ partial "top-menu.html" .}}
-  <div id="app">
-    {{ block "main" .}}{{ end}}
-  </div>
+  <el-container id="app">
+    <el-aside width="200px">
+      {{ partial "left-menu.html" .}}
+    </el-aside>
+    <el-container>
+      <el-header>
+        <el-row type="flex" :gutter="20" align="middle">
+          <el-col :span="20">
+          </el-col>
+          <el-col :span="4" style="text-align: right;">
+            <i class="el-icon-bell"></i>
+            <el-avatar class="md_headpic" :size="50"
+              src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png">
+            </el-avatar>
+            <el-dropdown :hide-on-click="false">
+              <span class="el-dropdown-link">
+                郑罡<i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item>编辑信息</el-dropdown-item>
+                <el-dropdown-item>退出</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-col>
+        </el-row>
+      </el-header>
+      <el-main>{{ block "main" .}}{{end}}</el-main>
+    </el-container>
+  </el-container>
+  {{ block "script" .}}{{end}}
+  <script>
+    var a = "{{ .Page.RelPermalink }}";
+    var app = new Vue({
+      el: "#app",
+      delimiters: ['[[', ']]'],
+      mixins: [mixin],
+      data: {
+        activeIndex2: a,
+        activeIndex3: "",
+        username: "",
+        circulUrl: "",
+        obj: {},
+      },
+      mounted: function () {
+        this.height = window.innerHeight - this.$refs.multipleTable.$el.offsetTop - 50;
+        this.$cookies.set("historypage", "{{ .Page.Permalink }}");
+        token = this.$cookies.get("token");
+        uid = this.$cookies.get("uid");
+        //console.log(token);
+        if (token == null || token == "") {
+          window.location.replace("/");
+        } else {
+          $.ajax({
+            url: "{{ .Site.Params.jsonUrl }}" + "/api/v1/users/" + uid + "/detail",
+            method: "get",
+            contentType: 'application/x-www-form-urlencoded;charset:UTF-8',
+            data: {},
+            headers: {
+              uid: uid,
+              token: token,
+              platform: "pc",
+            }
+          }).then(ret => {
+            if (ret.code == 200) {
+              this.username = ret.datas.username;
+            }
+            if (ret.code != 200) {
+              window.location.replace("/");
+              console.log(ret);
+            }
+          })
+        }
+  
+      },
+      methods: {
+        handleSelect(key, keyPath) {
+          //console.log(key, keyPath);
+          window.location.replace(key);
+        },
+        handleRightSelect(key, keyPath) {
+          window.location.replace(key);
+        }
+      }
+    })
+  </script>
+
+  <!--<div id="app">
+    block "main" end
+  </div>-->
 </body>
 
-{{ block "main_script" .}}{{end}}
+
+
 </html>
