@@ -1,23 +1,116 @@
-.div-default {
-  margin-top:20px;
+html,
+body,
+#app,
+.el-container {
+  /*设置内部填充为0，几个布局元素之间没有间距*/
+  padding: 0px;
+  /*外部间距也是如此设置*/
+  margin: 0px;
+  /*统一设置高度为100%*/
+  height: 100%;
 }
+
+.el-header,
+.el-footer {
+  color: #333;
+  text-align: center;
+  line-height: 60px;
+}
+
+.el-footer {
+  border-top: 2px solid #99a9bf;
+}
+
+.el-header {
+  border-bottom: 2px solid #99a9bf;
+}
+
+.el-aside {
+  background-color: #545c64;
+  color: #333;
+  text-align: center;
+}
+
+.el-main {
+  background-color: #E9EEF3;
+  color: #333;
+  text-align: left;
+}
+
+body>.el-container {
+  margin-bottom: 40px;
+}
+
+.el-menu-item {
+  text-align: left;
+}
+
+.el-submenu {
+  text-align: left;
+}
+
+.md_headpic {
+  border: none;
+  vertical-align: middle;
+  margin-left: 10px;
+}
+
+.el-table {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+  border-radius: 4px;
+}
+
+.icon-button-edit {
+  background-color: transparent;
+  border-width: 0px;
+  color: #409EFF;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.icon-button-delete {
+  background-color: transparent;
+  border-width: 0px;
+  color: #F56C6C;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.el-dialog__header{
+  background-color: #545c64;
+  color: #fff;
+}
+.el-dailog__close{
+  color:#fff;
+}
+.el-dialog__title{
+  color:#fff;
+}
+
+.delete_form .el-input{
+  border-width: 0px;
+}
+
+.div-default {
+  margin-bottom: 20px;
+}
+
 .demo-table-expand {
   font-size: 0;
 }
+
 .demo-table-expand label {
   width: 90px;
   color: #99a9bf;
 }
+
 .demo-table-expand .el-form-item {
   margin-right: 0;
   margin-bottom: 0;
   width: 50%;
 }
+
 .rule-select {
-  padding-left:3rem;
-  margin-bottom:2rem;
-}
-.el-dropdown-link {
-  cursor: pointer;
-  color: whitesmoke;
+  padding-left: 3rem;
+  margin-bottom: 2rem;
 }
