@@ -1,0 +1,29 @@
+<div>
+  <el-menu :default-active="activeIndex2" class="el-menu-vertical-demo" @select="handleSelect"
+    background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" unique-opened>
+    <el-menu-item index="1"><img class="img-fluid" src="{{ .Site.Params.logo | absURL }}" alt="{{ .Site.Title }}">
+    </el-menu-item>
+    <el-menu-item index="/dashboard">
+      <i class="el-icon-s-home"></i>
+      <span slot="title">首 页</span>
+    </el-menu-item>
+    {{ range .Site.Menus.main}}
+    {{ if .HasChildren }}
+    <el-submenu index="{{ .URL }}">
+      <template slot="title">
+        <i class="{{with .Params.Icon }}{{.}}{{ end }}"></i>
+        <span slot="title">{{ .Name }}</span>
+      </template>
+      {{ range .Children}}
+      <el-menu-item index="{{ .URL }}">{{.Name }}</el-menu-item>
+      {{ end }}
+    </el-submenu>
+    {{ else }}
+    <el-menu-item index="{{ .URL }}">
+      <i class="{{with .Params.Icon }}{{.}}{{ end}}"></i>
+      <span slot="title">{{ .Name }}</span>
+    </el-menu-item>
+    {{ end }}
+    {{ end }}
+  </el-menu>
+</div>
