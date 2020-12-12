@@ -1,158 +1,127 @@
 {{ define "main"}}
 <div class="div-default">
   <el-row>
-    <el-button type="primary" class="ml-2" @click="addVisible = true">添加人员</el-button>
-    <!--<el-button type="primary" class="ml-2">批量导入</el-button>
+    <el-col :span="4">
+      <el-button type="primary" class="ml-2" @click="addVisible = true">添加人员</el-button>
+      <!--<el-button type="primary" class="ml-2">批量导入</el-button>
     <el-button type="primary" class="ml-2">批量导出</el-button>
     <el-button type="danger" class="ml-2" :disabled="this.sels.length === 0" @click="delAllVisible = true">批量删除
     </el-button>-->
+    </el-col>
   </el-row>
 </div>
 
-<div class="div-default ml-2">
-  <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%"
-    @selection-change="handleSelectionChange" :height="height" id="tableData" stripe :header-cell-style="{background:'#eef1f6',color:'#606266'}">
-    <el-table-column type="selection" width="55">
-    </el-table-column>
-    <el-table-column prop="company" label="公司名称" width="120">
-    </el-table-column>
-    <el-table-column prop="name" label="人员姓名" width="120">
-    </el-table-column>
-    <el-table-column prop="wechat_nick" label="微信号" width="200">
-    </el-table-column>
-    <el-table-column prop="phone" label="联系电话" width="200">
-    </el-table-column>
-    <el-table-column prop="storenum" label="门店数量" width="200"><template slot-scope="scope">
-        [[ scope.row.storenum]]<el-link icon="el-icon-edit" @click="editStores(scope.row.id,scope.row.companyid)">
-        </el-link>
-      </template>
-    </el-table-column>
-    <el-table-column label="添加日期" prop="created_time" show-overflow-tooltip sortable>
-    </el-table-column>
-    <el-table-column label="修改日期" prop="updated_time" show-overflow-tooltip sortable>
-    </el-table-column>
-    <el-table-column label="权限" width="200">
-      <template slot-scope="scope">
-        <el-tag v-for="item in scope.row.roleflags" :key="item" effect="dark" type="info" size="small">
-          [[ item ]]
-        </el-tag>
-      </template>
-    </el-table-column>
-    <el-table-column prop="status_cn" label="当前状态" width="120" sortable :filters="statustags"
-      :filter-method="filterStatus" filter-placement="bottom-end">
-    </el-table-column>
-    <el-table-column label="操作" width="160">
-      <template slot-scope="scope">
-        <el-button size="mini" type="danger" @click="closeRecord(scope.$index, scope.row)">删除</el-button>
-        <el-button size="mini" type="success" @click="modifyRecord(scope.$index, scope.row)">修改</el-button>
-      </template>
-    </el-table-column>
-  </el-table>
+<el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 98%"
+  @selection-change="handleSelectionChange" :height="height" id="tableData" stripe
+  :header-cell-style="{background:'#eef1f6',color:'#606266'}" border>
+  <el-table-column type="selection" width="55">
+  </el-table-column>
+  <el-table-column prop="name" label="人员姓名" min-width="120">
+  </el-table-column>
+  <el-table-column prop="wechat_nick" label="微信号" min-width="160">
+  </el-table-column>
+  <el-table-column prop="phone" label="联系电话" min-width="120">
+  </el-table-column>
+  <el-table-column prop="storenum" label="门店数量" width="120"><template slot-scope="scope">
+      [[ scope.row.storenum]]<el-link icon="el-icon-edit" @click="editStores(scope.row.id,scope.row.companyid)">
+      </el-link>
+    </template>
+  </el-table-column>
+  <el-table-column label="添加日期" min-width="160" prop="created_time" show-overflow-tooltip sortable>
+  </el-table-column>
+  <el-table-column label="修改日期" min-width="160" prop="updated_time" show-overflow-tooltip sortable>
+  </el-table-column>
+  <el-table-column label="权限" width="200">
+    <template slot-scope="scope">
+      <el-tag v-for="item in scope.row.roleflags" :key="item" effect="dark" type="info" size="small">
+        [[ item ]]
+      </el-tag>
+    </template>
+  </el-table-column>
+  <el-table-column prop="status_cn" label="当前状态" width="120" sortable :filters="statustags"
+    :filter-method="filterStatus" filter-placement="bottom-end">
+  </el-table-column>
+  <el-table-column label="操作" width="120" fixed="right">
+    <template slot-scope="scope">
+      <el-button-group>
+        <el-button size="mini" type="success" icon="el-icon-edit" class="icon-button-edit"
+          @click="modifyRecord(scope.$index, scope.row)"></el-button>
+        <el-button size="mini" type="danger" icon="el-icon-delete" class="icon-button-delete"
+          @click="closeRecord(scope.$index, scope.row)"></el-button>
+      </el-button-group>
+    </template>
+  </el-table-column>
+</el-table>
 
-  <!--  批量删除 -->
-  <el-dialog title="批量删除提示" :visible.sync="delAllVisible" width="30%">
-    <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
-    <span slot="footer" class="dialog-footer">
-      <el-button @click="delAllVisible = false">取消</el-button>
-      <el-button type="danger">确认删除</el-button>
-    </span>
-  </el-dialog>
+<el-dialog :title="form.title" :visible.sync="addVisible" width="30%">
+  <el-form :model="form" :rules="rules" ref="form">
+    <el-form-item label="人员姓名" :label-width="formLabelWidth" prop="name">
+      <el-input v-model="form.name" autocomplete="off"></el-input>
+    </el-form-item>
+    <el-form-item label="联系电话" :label-width="formLabelWidth" prop="phone">
+      <el-input v-model="form.phone" autocomplete="off" maxlength="11" show-word-limit></el-input>
+    </el-form-item>
+    <el-form-item label="初始密码" :label-width="formLabelWidth" prop="password">
+      <el-input v-model="form.password" autocomplete="off"></el-input>
+    </el-form-item>
+    <el-form-item label="系统角色" :label-width="formLabelWidth" prop="role">
+      <el-checkbox-group v-model="form.roles">
+        <el-checkbox label=3 disabled>用户</el-checkbox>
+        <el-checkbox label=4>管理员</el-checkbox>
+        <el-checkbox label=5>维修工程师</el-checkbox>
+      </el-checkbox-group>
+    </el-form-item>
+  </el-form>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="addVisible = false">取消</el-button>
+    <template v-if="form.active == '添加'">
+      <el-button type="primary" @click="submitForm('form')">确认[[form.active]]</el-button>
+    </template>
+    <template v-if="form.active == '修改'">
+      <el-button type="primary" @click="updateForm('form')">确认[[form.active]]</el-button>
+    </template>
+  </span>
+</el-dialog>
 
-  <!--  添加人员信息 -->
-  <el-dialog :title="form.title" :visible.sync="addVisible" width="30%">
-    <el-form :model="form" :rules="rules" ref="form">
-      <el-form-item label="人员姓名" :label-width="formLabelWidth" prop="name">
-        <el-input v-model="form.name" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item label="联系电话" :label-width="formLabelWidth" prop="phone">
-        <el-input v-model="form.phone" autocomplete="off" maxlength="11" show-word-limit></el-input>
-      </el-form-item>
-      <el-form-item label="初始密码" :label-width="formLabelWidth" prop="password">
-        <el-input v-model="form.password" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item label="系统角色" :label-width="formLabelWidth" prop="role">
-        <el-checkbox-group v-model="form.roles">
-          <el-checkbox label=3>用户</el-checkbox>
-          <el-checkbox label=4>管理员</el-checkbox>
-          <el-checkbox label=5>维修工程师</el-checkbox>
-        </el-checkbox-group>
-      </el-form-item>
-    </el-form>
-    <span slot="footer" class="dialog-footer">
-      <el-button @click="addVisible = false">取消</el-button>
-      <template v-if="form.active == '添加'">
-        <el-button type="primary" @click="submitForm('form')">确认[[form.active]]</el-button>
-      </template>
-      <template v-if="form.active == '修改'">
-        <el-button type="primary" @click="updateForm('form')">确认[[form.active]]</el-button>
-      </template>
-    </span>
-  </el-dialog>
+<!--    单行关闭  -->
+<el-dialog title="删除提示" :visible.sync="closeVisible" width="40%">
+  <el-form :model="closeForm" label-width="100px" ref="closeForm">
+    <el-form-item label="姓 名" prop="name">
+      <el-input v-model="closeForm.name" placeholder="姓名" readonly></el-input>
+    </el-form-item>
+    <el-form-item label="微信昵称" prop="wechat_nick" readonly>
+      <el-input v-model="closeForm.wechat_nick" placeholder="微信昵称" readonly></el-input>
+    </el-form-item>
+    <el-form-item label="手机号" prop="phone" readonly>
+      <el-input v-model="closeForm.phone" placeholder="手机号" readonly></el-input>
+    </el-form-item>
+  </el-form>
+  <span>删除不可恢复，是否确定删除？</span>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="repairVisible = false">取消</el-button>
+    <el-button @click="deleteForm('closeForm')" type="danger">确认提交</el-button>
+  </span>
+</el-dialog>
 
-  <!--    单行关闭  -->
-  <el-dialog title="删除提示" :visible.sync="closeVisible" width="40%">
-    <el-form :data="closeForm" label-width="100px">
-      <el-row>
-        <el-col :span="12">
-          <el-form-item label="人员编号" prop="personid">
-            [[closeForm.personid]]
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="人员姓名" prop="personname">
-            [[closeForm.personname]]
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="12">
-          <el-form-item label="职位" prop="job">
-            [[closeForm.job]]
-          </el-form-item>
-        </el-col>>
-      </el-row>
-    </el-form>
-    <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
-    <span slot="footer" class="dialog-footer">
-      <el-button @click="repairVisible = false">取消</el-button>
-      <el-button type="danger">确认提交</el-button>
-    </span>
-  </el-dialog>
+<!--分配门店-->
+<el-dialog title="分配门店" :visible.sync="storesVisible" width="40%">
+  <el-form :model="storeform" ref="storeform">
+    <el-transfer filterable filter-placeholder="请输入门店名称" v-model="selectStore" :data="storeDatas"
+      :titles="['未选中','已选中']">
+    </el-transfer>
+  </el-form>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="storesVisible = false">取消</el-button>
+    <el-button type="primary" @click="updateStoreForm('storeform')">确 认</el-button>
+    </template>
 
-  <!--分配门店-->
-  <el-dialog title="分配门店" :visible.sync="storesVisible" width="40%">
-    <el-form :model="storeform" ref="storeform">
-      <el-transfer filterable filter-placeholder="请输入门店名称" v-model="selectStore" :data="storeDatas"
-        :titles="['未选中','已选中']">
-      </el-transfer>
-    </el-form>
-    <span slot="footer" class="dialog-footer">
-      <el-button @click="storesVisible = false">取消</el-button>
-      <el-button type="primary" @click="updateStoreForm('storeform')">确 认</el-button>
-      </template>
-
-    </span>
-  </el-dialog>
-</div>
-
+  </span>
+</el-dialog>
 {{ end}}
 
-{{define "main_script"}}
+{{ define "script"}}
 <script>
-  function getCookie(cname) {
-    var name = cname + "=";
-    var ca = document.cookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-      var c = ca[i].trim();
-      if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
-    }
-    return "";
-  }
-  uid = getCookie("uid");
-  token = getCookie("token");
-  app = new Vue({
-    el: "#app",
-    delimiters: ['[[', ']]'],
+  var mixin = {
     data: Object.assign({
       websocketDisconnected: false,
       employees: [],
@@ -207,7 +176,12 @@
       closeVisible: false,
       storesVisible: false,
       //设置form用于进行添加的时候绑定值
-      closeForm: {},
+      closeForm: {
+        id:0,
+        name: "",
+        wechat_nick: "",
+        phone: ""
+      },
       modifyForm: {},
       currentIndex: [],
 
@@ -215,6 +189,8 @@
       height: null,
     }),
     mounted: function () {
+      uid = this.$cookies.get("uid");
+      token = this.$cookies.get("token")
       this.height = window.innerHeight - this.$refs.multipleTable.$el.offsetTop - 50;
       //console.log(this.height);
       url = "{{.Site.Params.jsonURL}}/api/v1/employees"
@@ -339,7 +315,7 @@
               console.log(ret);
               this.employees.push(ret.datas);
               this.$message({
-                message: '添加用户信息成功',
+                message: '添加员工信息成功',
                 type: 'success'
               });
               this.addVisible = false;
@@ -383,7 +359,7 @@
               //this.customers[this.currentIndex] = ret.datas;
               //this.$set(this.customers, this.currentIndex, this.customers[this.currentIndex]);
               this.$message({
-                message: '添加客户信息成功',
+                message: '添加员工信息成功',
                 type: 'success'
               });
               this.addVisible = false;
@@ -394,9 +370,39 @@
           }
         });
       },
+      //将不需要的用户标注为删除状态
+      deleteForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            url = "{{.Site.Params.jsonURL}}/api/v1/employees/" + this.closeForm.id;
+            $.ajax({
+              url: url,
+              method: "delete",
+              headers: {
+                uid: uid,
+                token: token,
+                platform: "pc",
+              },
+              contentType: 'application/x-www-form-urlencoded',
+              data: {}
+            }).then(ret => {
+              //console.log(ret)
+              this.employees = this.employees.filter(t => t.id != ret.datas.id);
+              this.$message({
+                message: '删除员工信息成功',
+                type: 'success'
+              })
+              this.closeVisible = false;
+            })
+          } else {
+            console.log("error submit!");
+            return false;
+          }
+        });
+      },
       // 增加数据的方式,将这些值增加到单行删除按钮对话框中
       closeRecord(index, row) {
-        console.log("open dialg");
+        //console.log("open dialg");
         //将表格中的数据传递到对话框
         this.closeForm = row;
         this.currentIndex = index;
@@ -464,7 +470,7 @@
           },
           data: {},
         }).then(ret => {
-          if (ret.datas != null){
+          if (ret.datas != null) {
             let data = [];
             for (let i = 0; i < ret.datas.length; i++) {
               data.push(ret.datas[i].code);
@@ -504,142 +510,6 @@
         })
       }
     }
-  })
-  /*$.getJSON("{{.Site.Params.jsonURL}}/api/v1/persons")
-    .then((ret) => {
-      new Vue({
-        el: "#app",
-        delimiters: ['[[', ']]'],
-        data: Object.assign({
-          websocketDisconnected: false,
-          persons: [],
-          statustags: [],
-          companies: [],
-          filterform: {
-            companyids: [],
-            options: [],
-            powers:[],
-          },
-          sels:[],
-          //添加按钮弹出框
-          addVisible:false,
-          form: {
-            title:"添加人员",
-            active:"添加",
-            name: '',
-            weichat: '',
-            tel: '',
-            email: '',
-            delivery: false,
-            job: '',
-            company: ''
-          },
-          //添加按钮弹出框规则设置
-          rules:{
-            personname:[
-              {required:true,message:"请填写人员姓名",trigger:"blur"},
-            ],
-            weichat:[
-              {required:true,message:"请填写相关微信号",trigger:"blur"}
-            ],
-            company: [
-              {required: true, message: '请至少选择一个负责公司', trigger: 'change' }
-            ]
-          },
-          //批量删除对话框弹出
-          delAllVisible:false,
-          //单行关闭对话框弹出
-          closeVisible:false,
-          //设置form用于进行添加的时候绑定值
-          closeForm:{},
-          modifyForm:{},
-          currentIndex:[],
-          
-          formLabelWidth: '120px',
-        }, {
-          "persons": ret.persons,
-          "companies": ret.companies,
-          "statustags": ret.status,
-          "powers": ret.powers
-        }),
-        computed: {
-          tableData() {
-            let persons = this.persons.map(r => {
-              return Object.assign(r, this.personConvert(r))
-            })
-
-            if (this.filterform.companyids.length <= 0) {
-              return persons;
-            }
-            persons = this.persons.filter(r => {
-            //  return this.filterform.storeids.some(s => r.storeid.includes(s));
-            for(var i = 0 ; i < this.filterform.companyids.length ; i++){
-              if ( this.filterform.companyids[i] == r.companyid) {
-                return r
-              }
-            }
-            });
-            return persons;
-          }
-        },
-        methods: {
-          personConvert(person) {
-            if (person.status == 1) {
-              return {
-                order: 1,
-                status_cn: "离岗中"
-              }
-            } else if (person.status == 2) {
-              return {
-                order: 2,
-                status_cn: "在岗中"
-              }
-            } else if (person.status == 3) {
-              return {
-                order: 3,
-                status_cn: "离职中"
-              }
-            } 
-          },
-          handleSelectionChange(sels) {
-            this.sels = sels ,
-            console.log()
-          },
-          filterStatus(value, row) {
-            return row.status === value
-          },
-          filterRecord(value) {
-
-          },
-          //验证是否能能成功提交维修对话框
-          submitForm(formName){
-            this.$refs[formName].validate((valid) => {
-              if (valid) {
-                alert('submit!');
-              } else {
-                console.log('error submit!!');
-                return false;
-              }
-            });
-          },
-          // 增加数据的方式,将这些值增加到单行删除按钮对话框中
-          closeRecord(index , row){
-          //将表格中的数据传递到对话框
-            this.closeForm = this.tableData[index];
-            this.currentIndex = index;
-            this.closeVisible = true;
-          },
-          // 增加数据的方式,将这些值增加到单行修改按钮对话框中
-          modifyRecord(index , row){
-          //将表格中的数据传递到对话框
-            this.form = this.tableData[index];
-            this.currentIndex = index;
-            this.addVisible = true;
-            this.form.title = "修改信息";
-            this.form.active = "修改";
-          },
-        }
-      })
-    })*/
+  }
 </script>
 {{ end }}

@@ -1,90 +1,69 @@
 {{ define "main"}}
 <div class="div-default">
   <el-row>
-    <el-button type="primary" class="ml-2" @click="addVisible = true">添加公司</el-button>
+    <el-button type="success" class="ml-2" @click="addVisible = true">添加公司</el-button>
   </el-row>
 </div>
 
-<div class="div-default ml-2">
-  <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 98%"
-    @selection-change="handleSelectionChange" :height="height" stripe :header-cell-style="{background:'#eef1f6',color:'#606266'}">
-    <el-table-column prop="companyid" label="公司编号" width="120"><template slot-scope="scope">[[ scope.row.code
-        ]]</template>
-    </el-table-column>
-    <el-table-column prop="abbreviation" label="公司缩写" width="120"><template slot-scope="scope">[[ scope.row.abbr
-        ]]</template>
-    </el-table-column>
-    <el-table-column prop="companyname" label="公司名称" width="200"><template slot-scope="scope">[[ scope.row.name
-        ]]</template>
-    </el-table-column>
-    <el-table-column prop="remarks" label="备注" width="200"><template slot-scope="scope">[[ scope.row.desc
-        ]]</template>
-    </el-table-column>
-    <el-table-column label="添加日期" show-overflow-tooltip sortable width="200">
-      <template slot-scope="scope">[[ scope.row.created_time ]]</template>
-    </el-table-column>
-    <el-table-column label="修改日期" show-overflow-tooltip sortable width="200">
-      <template slot-scope="scope">[[ scope.row.updated_time ]]</template>
-    </el-table-column>
-    <el-table-column prop="status_cn" label="当前状态" width="120" sortable :filters="statustags"
-      :filter-method="filterStatus" filter-placement="bottom-end">
-    </el-table-column>
-    <el-table-column label="操作" width="160">
-      <template slot-scope="scope">
-        <el-button size="mini" type="danger" @click="closeRecord(scope.$index, scope.row)">关闭</el-button>
-        <el-button size="mini" type="success" @click="modifyRecord(scope.$index, scope.row)">修改</el-button>
-      </template>
-    </el-table-column>
-  </el-table>
+<el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 98%;" border
+  @selection-change="handleSelectionChange" :height="height" stripe
+  :header-cell-style="{background:'#eef1f6',color:'#606266'}">
+  <el-table-column prop="code" label="公司编号" min-width="120"></el-table-column>
+  <el-table-column prop="abbr" label="公司缩写" min-width="120"></el-table-column>
+  <el-table-column prop="name" label="公司名称" min-width="200"></el-table-column>
+  <el-table-column prop="store_num" label="门店数" min-width="100"></el-table-column>
+  <el-table-column prop="user_num" label="人员数" min-width="100"></el-table-column>
+  <el-table-column prop="desc" label="备注" min-width="200"></el-table-column>
+  <el-table-column prop="created_time" label="添加日期" show-overflow-tooltip sortable min-width="200"></el-table-column>
+  <el-table-column prop="updated_time" label="修改日期" show-overflow-tooltip sortable min-width="200"></el-table-column>
+  <el-table-column prop="status_cn" label="当前状态" width="120" sortable :filters="statustags"
+    :filter-method="filterStatus" filter-placement="bottom-end">
+  </el-table-column>
+  <el-table-column label="操作" width="120">
+    <template slot-scope="scope">
+      <el-button-group>
+        <el-button size="mini" type="success" icon="el-icon-edit" class="icon-button-edit"
+          @click="modifyRecord(scope.$index, scope.row)"></el-button>
+        <el-button size="mini" type="danger" icon="el-icon-delete" class="icon-button-delete"
+          @click="closeRecord(scope.$index, scope.row)"></el-button>
+      </el-button-group>
+    </template>
+  </el-table-column>
+</el-table>
 
-  <!--  添加公司信息 -->
-  <el-dialog :title="form.title" :visible.sync="addVisible" width="30%">
-    <el-form :model="form" :rules="rules" ref="form">
-      <el-form-item label="公司名称" :label-width="formLabelWidth" prop="name">
-        <el-input v-model="form.name" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item label="公司缩写" :label-width="formLabelWidth" prop="abbr">
-        <el-input v-model="form.abbr" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item label="备注" prop="desc" :label-width="formLabelWidth">
-        <el-input type="textarea" v-model="form.desc"></el-input>
-      </el-form-item>
-    </el-form>
-    <span slot="footer" class="dialog-footer">
-      <el-button @click="addVisible = false">取消</el-button>
-      <template v-if="form.active == '添加'">
-        <el-button type="primary" @click="submitForm('form')">确认[[form.active]]</el-button>
-      </template>
-      <template v-if="form.active == '修改'">
-        <el-button type="primary" @click="updateForm('form')">确认[[form.active]]</el-button>
-      </template>
-      <template v-if="form.active == '删除'">
-        <el-button type="danger" @click="deleteForm('form')">确认[[form.active]]</el-button>
-      </template>
-    </span>
-  </el-dialog>
-</div>
-</div>
+<!--  操作公司信息对话框 -->
+<el-dialog :title="form.title" :visible.sync="addVisible" width="30%">
+  <el-form :model="form" :rules="rules" ref="form">
+    <el-form-item label="公司名称" :label-width="formLabelWidth" prop="name">
+      <el-input v-model="form.name" autocomplete="off"></el-input>
+    </el-form-item>
+    <el-form-item label="公司缩写" :label-width="formLabelWidth" prop="abbr">
+      <el-input v-model="form.abbr" autocomplete="off"></el-input>
+    </el-form-item>
+    <el-form-item label="备注" prop="desc" :label-width="formLabelWidth">
+      <el-input type="textarea" v-model="form.desc"></el-input>
+    </el-form-item>
+  </el-form>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="addVisible = false">取消</el-button>
+    <template v-if="form.active == '添加'">
+      <el-button type="primary" @click="submitForm('form')">确认[[form.active]]</el-button>
+    </template>
+    <template v-if="form.active == '修改'">
+      <el-button type="primary" @click="updateForm('form')">确认[[form.active]]</el-button>
+    </template>
+    <template v-if="form.active == '删除'">
+      <el-button type="danger" @click="deleteForm('form')">确认[[form.active]]</el-button>
+    </template>
+  </span>
+</el-dialog>
 {{ end }}
 
-{{define "main_script"}}
+{{ define "script"}}
 <script>
-  function getCookie(cname) {
-    var name = cname + "=";
-    var ca = document.cookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-      var c = ca[i].trim();
-      if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
-    }
-    return "";
-  }
-  uid = getCookie("uid");
-  token = getCookie("token");
-  app = new Vue({
-    el: "#app",
-    delimiters: ['[[', ']]'],
+  var mixin = {
     data: Object.assign({
-      statustags: ["可用","已删除"],
+      statustags: ["可用", "已删除"],
       companies: [],
       filterform: {
         storeids: [],
@@ -102,7 +81,7 @@
       },
       //添加按钮弹出框规则设置
       rules: {
-        companyname: [{
+        name: [{
           required: true,
           message: "请填写公司名称",
           trigger: "blur"
@@ -112,7 +91,8 @@
       height: null,
     }),
     mounted: function () {
-      this.height = window.innerHeight - this.$refs.multipleTable.$el.offsetTop - 50;
+      uid = this.$cookies.get("uid");
+      token = this.$cookies.get("token")
       url = "{{.Site.Params.jsonURL}}/api/v1/companies"
       $.ajax({
         url: url,
@@ -233,8 +213,8 @@
           }
         });
       },
-      deleteForm(formName){
-        url ="{{.Site.Params.jsonURL}}/api/v1/companies/" + this.form.id;
+      deleteForm(formName) {
+        url = "{{.Site.Params.jsonURL}}/api/v1/companies/" + this.form.id;
         $.ajax({
           url: url,
           method: "delete",
@@ -245,7 +225,7 @@
           },
           contentType: 'application/x-www-form-urlencoded',
           data: {}
-        }).then(ret =>{
+        }).then(ret => {
           //console.log(ret)
           this.companies = this.companies.filter(t => t.id != ret.datas.id);
           this.addVisible = false;
@@ -266,6 +246,7 @@
       // 增加数据的方式,将这些值增加到单行修改按钮对话框中
       modifyRecord(index, row) {
         //将表格中的数据传递到对话框
+        console.log(row);
         this.form.name = row.name;
         this.form.abbr = row.abbr;
         this.form.desc = row.desc;
@@ -276,116 +257,6 @@
         this.form.active = "修改";
       },
     }
-  })
-
-  /*url ="{{.Site.Params.jsonURL}}/api/v1/companies" 
-  $.ajax({
-    url: url,
-    method: "get",
-    headers:{
-      uid: uid,
-      token:token,
-      platform: "pc",
-    },
-    contentType: 'application/x-www-form-urlencoded',
-    data: {
-    },
-  }).then((ret) => {
-      new Vue({
-        el: "#app",
-        delimiters: ['[[', ']]'],
-        data: Object.assign({
-          websocketDisconnected: false,
-          companies: [],
-          statustags: [],
-          filterform: {
-            storeids: [],
-            options: [],
-          },
-          //添加按钮弹出框
-          addVisible:false,
-          form: {
-            title:"添加公司",
-            active:"添加",
-            companyname: '',
-            abbreviation: '',
-            remarks: ''
-          },
-          //添加按钮弹出框规则设置
-          rules:{
-            companyname:[
-              {required:true,message:"请填写公司名称",trigger:"blur"},
-            ]
-          },
-          //单行关闭对话框弹出
-          closeVisible:false,
-          //设置form用于进行添加的时候绑定值
-          closeForm:{},          
-          formLabelWidth: '120px',
-        }, {
-          "companies": ret.datas,
-          "statustags": ret.status
-        }),
-        computed: {
-          tableData() {
-            let companies = this.companies.map(r => {
-              return Object.assign(r, this.companyConvert(r))
-            })
-            return companies;
-          }
-        },
-        methods: {
-          companyConvert(company) {
-            if (company.status == 1) {
-              return {
-                order: 1,
-                status_cn: "可用"
-              }
-            } else if (company.status == 2) {
-              return {
-                order: 2,
-                status_cn: "已删除"
-              }
-            } 
-          },
-          handleSelectionChange() {
-            console.log()
-          },
-          filterStatus(value, row) {
-            return row.status === value
-          },
-          filterRecord(value) {
-
-          },
-          //验证是否能能成功提交对话框
-          submitForm(formName){
-            this.$refs[formName].validate((valid) => {
-              if (valid) {
-                alert('submit!');
-              } else {
-                console.log('error submit!!');
-                return false;
-              }
-            });
-          },
-          // 增加数据的方式,将这些值增加到单行删除按钮对话框中
-          closeRecord(index , row){
-          //将表格中的数据传递到对话框
-            this.closeForm = this.tableData[index];
-            this.currentIndex = index;
-            this.closeVisible = true;
-          },
-          // 增加数据的方式,将这些值增加到单行修改按钮对话框中
-          modifyRecord(index , row){
-          //将表格中的数据传递到对话框
-            this.form = this.tableData[index];
-            this.currentIndex = index;
-            this.addVisible = true;
-            this.form.title = "修改信息";
-            this.form.active = "修改";
-          },
-        }
-      })
-    })*/
+  }
 </script>
-{{ end }}
+{{ end}}
