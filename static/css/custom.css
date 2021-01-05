@@ -41,6 +41,9 @@ body>.el-container {
   margin-bottom: 40px;
 }
 
+label{
+  margin-bottom: 0rem;
+}
 .el-menu-item {
   text-align: left;
 }
@@ -91,6 +94,15 @@ body>.el-container {
   border-width: 0px;
 }
 
+.el-tabs__header{
+  border-bottom: 1px solid #333 !important;
+}
+
+.pane-title {
+  font-size: 14px;
+  font-weight: bold;
+}
+
 .div-default {
   margin-bottom: 20px;
 }
@@ -113,4 +125,64 @@ body>.el-container {
 .rule-select {
   padding-left: 3rem;
   margin-bottom: 2rem;
+}
+
+p .title {
+  font-weight: bold;
+  width: 30%;
+  display: inline-block;
+  text-align: right;
+}
+
+.el-row {
+  margin-bottom: 20px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.el-col {
+  border-radius: 4px;
+}
+
+.bg-purple-dark {
+  background: #99a9bf;
+}
+
+.bg-purple {
+  background: #d3dce6;
+}
+
+.bg-purple-light {
+  background: #e5e9f2;
+}
+
+.grid-content {
+  border-radius: 4px;
+  min-height: 36px;
+  padding: 10px;
+}
+
+.row-bg {
+  padding: 10px 0;
+  background-color: #f9fafc;
+}
+
+.el-tag+.el-tag {
+  margin-left: 10px;
+}
+
+.button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
 }
