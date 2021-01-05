@@ -60,7 +60,7 @@ URL = "/worker-info/"
 [[menu.main]]
 parent = "基本信息"
 name= "基本设置"
-URL = "/"
+URL = "/base-info/"
 
 ## [[menu.main]]
 # parent = "基本信息"
