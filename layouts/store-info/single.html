@@ -1,0 +1,532 @@
+{{ define "main"}}
+<el-row :gutter="40">
+  <el-col :span="10">
+    <p class="pane-title">门店名称: [[store.name]] 【[[store.company]]】</p>
+  </el-col>
+</el-row>
+<el-row :gutter="40">
+  <el-col :span="12" :xl="10">
+    <div class="grid-content bg-purple">
+      <p class="pane-title">室内区域信息</p>
+
+      <el-form label-width="80px" :model="storeareaForm" :rules="storeareaRules" ref="storeareaForm" size="mini">
+        <el-form-item label="楼层" prop="floor">
+          <el-radio v-for="floor in basesettings.floor.types" :key="floor.key" v-model="storeareaForm.floorid"
+            :label="floor.key">
+            [[floor.name]]</el-radio>
+        </el-form-item>
+        <el-form-item label="功能区" prop="areafunctionid">
+          <el-select v-model="storeareaForm.areafunctionid" placeholder="请选择功能区">
+            <el-option v-for="area in basesettings.areafunction.types" :key="area.key" :label="area.name"
+              :value="area.key">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="addStoreareaForm('storeareaForm')">添加</el-button>
+        </el-form-item>
+      </el-form>
+      <el-table :data="storeareaTableData" tooltip-effect="dark" :height="height" stripe
+        :header-cell-style="{background:'#eef1f6',color:'#606266'}" ref="multipleTable">
+        <el-table-column prop="first_letter" label="首字母" width="100"></el-table-column>
+        <el-table-column prop="name" label="室内区域" min-width="200"></el-table-column>
+        <el-table-column prop="areafunction_name" label="功能区" min-width="100" sortable>
+          <template slot-scope="scope">
+            <span v-if="scope.row.is_set">
+              <el-select v-model="scope.row.areafunction_id" placeholder="请选择功能区" size="mini">
+                <el-option v-for="area in basesettings.areafunction.types" :key="area.key" :label="area.name"
+                  :value="area.key">
+                </el-option>
+              </el-select>
+            </span>
+            <span v-else>[[scope.row.areafunction_name]]</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="floor_name" label="楼层" min-width="100" sortable>
+          <template slot-scope="scope">
+            <span v-if="scope.row.is_set">
+              <el-select v-model="scope.row.floor_id" placeholder="请选择楼层" size="mini">
+                <el-option v-for="floor in basesettings.floor.types" :key="floor.key" :label="floor.name"
+                  :value="floor.key">
+                </el-option>
+              </el-select>
+            </span>
+            <span v-else>[[scope.row.floor_name]]</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="160" fixed="right">
+          <template slot-scope="scope">
+            <el-button size="mini" v-if="!scope.row.is_set" icon="el-icon-edit" class="icon-button-edit"
+              @click="storeareaEdit(scope.$index,scope.row,true)"></el-button>
+            <el-popover placement="top" width="200" trigger="click" :ref="'popover-edit-'+scope.$index" v-else>
+              <p>修改室内区域</p>
+              <div style="text-align: right; margin: 0">
+                <el-button size="mini" type="text" @click="closePopover(scope.$index,scope.row)">取消</el-button>
+                <el-button type="primary" size="mini" @click="updateStoreareaForm(scope.$index,scope.row)">确定
+                </el-button>
+              </div>
+              <el-button size="mini" icon="el-icon-finished" class="icon-button-edit" slot="reference">
+              </el-button>
+            </el-popover>
+            <el-button size="mini" v-if="scope.row.is_set" icon="el-icon-close" class="icon-button-edit"
+              @click="storeareaEdit(scope.$index,scope.row,false)"></el-button>
+            <el-popover placement="top" title="确认删除吗？" width="200" trigger="click" :ref="'popover-del-'+scope.$index"
+              v-else>
+              <div style="text-align: right; margin: 0">
+                <el-button size="mini" type="text" @click="closePopover(scope.$index,scope.row)">取消</el-button>
+                <el-button type="primary" size="mini" @click="deleteStoreareaForm(scope.$index,scope.row)">确定
+                </el-button>
+              </div>
+              <el-button size="mini" type="danger" icon="el-icon-delete" class="icon-button-delete" slot="reference">
+              </el-button>
+            </el-popover>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+  </el-col>
+  <el-col :span="12">
+    <div class="grid-content bg-purple">
+      <p class="pane-title">设备类型信息</p>
+      <el-form label-width="80px" :model="storedeviceForm" :rules="storedeviceRules" ref="storedeviceForm" size="mini">
+        <el-form-item label="设备类型" prop="devicecode">
+          <el-select v-model="storedeviceForm.devicecode" placeholder="请选择设备类型">
+            <el-option v-for="item in devices" :key="item.code" :label="item.name" :value="item.code">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="addStoredeviceForm('storedeviceForm')">添加</el-button>
+        </el-form-item>
+      </el-form>
+      <el-table :data="deviceTableData" tooltip-effect="dark" :height="height" stripe
+        :header-cell-style="{background:'#eef1f6',color:'#606266'}" ref="multipleTable">
+        <el-table-column prop="code" label="设备编号" width="100"></el-table-column>
+        <el-table-column prop="name" label="名称" min-width="200" sortable></el-table-column>
+        <el-table-column prop="device_type" label="种类" min-width="100"></el-table-column>
+        <el-table-column prop="areafunction_name" label="单位" min-width="100" ></el-table-column>
+        <el-table-column label="操作" width="100" fixed="right">
+          <template slot-scope="scope">
+            <el-button size="mini" v-if="scope.row.is_set" icon="el-icon-close" class="icon-button-edit"
+              @click="storedeviceEdit(scope.$index,scope.row,false)"></el-button>
+            <el-popover placement="top" title="确认删除吗？" width="200" trigger="click" :ref="'popover-del-'+scope.$index"
+              v-else>
+              <div style="text-align: right; margin: 0">
+                <el-button size="mini" type="text" @click="closePopover(scope.$index,scope.row)">取消</el-button>
+                <el-button type="primary" size="mini" @click="deleteStoredeviceForm(scope.$index,scope.row)">确定
+                </el-button>
+              </div>
+              <el-button size="mini" type="danger" icon="el-icon-delete" class="icon-button-delete" slot="reference">
+              </el-button>
+            </el-popover>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+  </el-col>
+</el-row>
+{{ end}}
+
+{{ define "script"}}
+<script>
+  var mixin = {
+    data: Object.assign({
+      showBackFlag: true,
+      backTitle: "门店信息 - 门店设置",
+      backRow: 1,
+      backPage: "",
+      store: {},
+      storeareas: [],
+      storeareaForm: {},
+      storeareaRules: {
+        areafunctionid: [{
+          required: true,
+          message: '请选择功能区',
+          trigger: 'blur'
+        }],
+      },
+      //基本设置信息
+      basesettings: {
+        fault: {
+          types: [],
+          visible: false,
+          value: "",
+        },
+        floor: {
+          types: [],
+          visible: false,
+          value: "",
+        },
+        areafunction: {
+          types: [],
+          visible: false,
+          value: "",
+        }
+      },
+      devices: [],
+      storedeviceForm: {},
+      storedeviceRules: {
+        deviceid: [{
+          required: true,
+          message: '请选择设备类型',
+          trigger: 'blur'
+        }],
+      },
+      storedevices:[],
+      formLabelWidth: '120px',
+      height: null,
+      heightOffset: 300,
+      tableHeight: null,
+    }),
+    mounted: function () {
+      uid = this.$cookies.get("uid");
+      token = this.$cookies.get("token");
+      storeCode = this.getUrlKey("storecode");
+      this.backRow = this.getUrlKey("row");
+
+      url = "{{.Site.Params.jsonURL}}/api/v1/stores/" + storeCode + "/info"
+      $.ajax({
+        url: url,
+        method: "get",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset:UTF-8",
+          "uid": uid,
+          "token": token,
+          "platform": "pc",
+        },
+        data: {},
+      }).then(ret => {
+        this.store = ret.datas;
+        this.statustags = ret.status;
+      });
+      url = "{{.Site.Params.jsonURL}}/api/v1/base_settings/all";
+      $.ajax({
+        url: url,
+        method: "get",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset:UTF-8",
+          "uid": uid,
+          "token": token,
+          "platform": "pc",
+        },
+        data: {},
+      }).then(ret => {
+        ret.datas.forEach(b => {
+          if (b.setting_type in this.basesettings) {
+            this.basesettings[b.setting_type].types.push({
+              key: b.id,
+              name: b.name,
+            })
+          }
+        })
+      });
+      url = "{{.Site.Params.jsonURL}}/api/v1/stores/" + storeCode + "/areas";
+      $.ajax({
+        url: url,
+        method: "get",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset:UTF-8",
+          "uid": uid,
+          "token": token,
+          "platform": "pc",
+        },
+        data: {},
+      }).then(ret => {
+        let storeareas = ret.datas.map(r => {
+          return Object.assign(r, {
+            is_set: false,
+          })
+        })
+        this.storeareas = storeareas;
+      });
+      url ="{{.Site.Params.jsonURL}}/api/v1/stores/" + storeCode + "/devices";
+      $.ajax({
+        url: url,
+        method: "get",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset:UTF-8",
+          "uid": uid,
+          "token": token,
+          "platform": "pc",
+        },
+        data: {},
+      }).then(ret => {
+        let storedeivces = ret.datas.map(r => {
+          return Object.assign(r, {
+            is_set: false,
+          })
+        })
+        this.storedevices = storedeivces;
+      });
+      url = "{{.Site.Params.jsonURL}}/api/v1/devices"
+      $.ajax({
+        url: url,
+        method: "get",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset:UTF-8",
+          "uid": uid,
+          "token": token,
+          "platform": "pc",
+        },
+        data: {},
+      }).then(ret => {
+        this.devices = ret.datas;
+      });
+    },
+    computed: {
+      storeareaTableData() {
+        let storeareas = this.storeareas.map(r => {
+          return Object.assign(r, {})
+        })
+        return storeareas;
+      },
+      deviceTableData(){
+        let storedevices = this.storedevices.map(r =>{
+          return Object.assign(r,{})
+        })
+        return storedevices;
+      },
+    },
+    methods: {
+      goBack: function (index) {
+        let url = "/{{.Page.Section}}/?row=" + index;
+        window.location.replace(url);
+        console.log(url);
+      },
+      getUrlKey: function (name) {
+        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.href) || [,
+          ""
+        ])[1].replace(/\+/g, '%20')) || null
+      },
+      closePopover: function (index, row) {
+        if (this.$refs[`popover-edit-` + index]) {
+          this.$refs[`popover-edit-` + index].doClose();
+        }
+        if (this.$refs[`popover-del-` + index]) {
+          this.$refs[`popover-del-` + index].doClose();
+        }
+        row.is_set = false;
+        this.storeareaForm.name = "";
+      },
+      listStorearea: function () {
+        url = "{{.Site.Params.jsonURL}}/api/v1/stores/" + this.store.code + "/areas";
+        $.ajax({
+          url: url,
+          method: "get",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset:UTF-8",
+            "uid": uid,
+            "token": token,
+            "platform": "pc",
+          },
+          data: {},
+        }).then(ret => {
+          let storeareas = ret.datas.map(r => {
+            return Object.assign(r, {
+              is_set: false,
+            })
+          })
+          this.storeareas = storeareas;
+        });
+      },
+      addStoreareaForm: function (formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            url = "{{.Site.Params.jsonURL}}/api/v1/stores/" + this.store.code + "/areas"
+            $.ajax({
+              url: url,
+              method: "post",
+              headers: {
+                uid: uid,
+                token: token,
+                platform: "pc",
+              },
+              contentType: 'application/x-www-form-urlencoded',
+              data: JSON.stringify({
+                "areafunctionid": this.storeareaForm.areafunctionid,
+                "floorid": this.storeareaForm.floorid,
+              })
+            }).then(ret => {
+              //console.log(ret);
+              //this.districts.push(ret.datas);
+              //this.listDistrict();
+              this.listStorearea();
+              this.storeareaForm.areafunctionid = "";
+              this.$message({
+                message: '添加室内区域信息成功',
+                type: 'success'
+              })
+            }).fail(ret => {
+              if (ret.responseJSON.code == 11201) {
+                this.$message({
+                  message: '室内区域信息已存在，添加失败',
+                  type: 'error'
+                })
+              }
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      storeareaEdit: function (index, row, flag) {
+        if (flag == true) {
+          for (let i of this.storeareas) {
+            if (i.is_set) return app.$message.warning("请先保存当前编辑项");
+          }
+        }
+        row.is_set = flag;
+      },
+      updateStoreareaForm: function (index, row) {
+        let storecode = row.store_code;
+        let id = row.id;
+        url = "{{.Site.Params.jsonURL}}/api/v1/stores/" + storecode + "/areas/" + id;
+        $.ajax({
+          url: url,
+          method: "put",
+          headers: {
+            uid: uid,
+            token: token,
+            platform: "pc",
+          },
+          contentType: 'application/x-www-form-urlencoded',
+          data: JSON.stringify({
+            "areafunctionid": row.areafunction_id,
+            "floorid": row.floor_id,
+          })
+        }).then(ret => {
+          //console.log(ret);
+          this.closePopover(index, row);
+          this.listStorearea();
+          this.$message({
+            message: '修改室内区域成功',
+            type: 'success'
+          });
+        }).fail(ret => {
+          if (ret.responseJSON.code == 11201) {
+            this.$message({
+              message: '室内区域信息已存在，添加失败',
+              type: 'error'
+            })
+          }
+        })
+      },
+      deleteStoreareaForm: function (index, row) {
+        let storecode = row.store_code;
+        let id = row.id;
+        url = "{{.Site.Params.jsonURL}}/api/v1/stores/" + storecode + "/areas/" + id;
+        $.ajax({
+          url: url,
+          method: "delete",
+          headers: {
+            uid: uid,
+            token: token,
+            platform: "pc",
+          },
+          contentType: 'application/x-www-form-urlencoded',
+          data: {}
+        }).then(ret => {
+          //console.log(ret);
+          this.listStorearea();
+          this.$message({
+            message: '删除室内区域成功',
+            type: 'success'
+          });
+        })
+      },
+      listStoredevice: function () {
+        url = "{{.Site.Params.jsonURL}}/api/v1/stores/" + this.store.code + "/devices";
+        $.ajax({
+          url: url,
+          method: "get",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset:UTF-8",
+            "uid": uid,
+            "token": token,
+            "platform": "pc",
+          },
+          data: {},
+        }).then(ret => {
+          let storedevices = ret.datas.map(r => {
+            return Object.assign(r, {
+              is_set: false,
+            })
+          })
+          this.storedevices = storedevices;
+        });
+      },
+      addStoredeviceForm: function (formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            url = "{{.Site.Params.jsonURL}}/api/v1/stores/" + this.store.code + "/devices"
+            $.ajax({
+              url: url,
+              method: "post",
+              headers: {
+                uid: uid,
+                token: token,
+                platform: "pc",
+              },
+              contentType: 'application/x-www-form-urlencoded',
+              data: JSON.stringify({
+                "devicecode": this.storedeviceForm.devicecode,
+              })
+            }).then(ret => {
+              //console.log(ret);
+              //this.districts.push(ret.datas);
+              //this.listDistrict();
+              this.listStoredevice();
+              this.storedeviceForm.devicecode = "";
+              this.$message({
+                message: '添加设备类型信息成功',
+                type: 'success'
+              })
+            }).fail(ret => {
+              if (ret.responseJSON.code == 11701) {
+                this.$message({
+                  message: '设备类型信息已存在，添加失败',
+                  type: 'error'
+                })
+              }
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      storedeviceEdit: function (index, row, flag) {
+        if (flag == true) {
+          for (let i of this.storeareas) {
+            if (i.is_set) return app.$message.warning("请先保存当前编辑项");
+          }
+        }
+        row.is_set = flag;
+      },
+      deleteStoredeviceForm: function (index, row) {
+        let code = row.code;
+        url = "{{.Site.Params.jsonURL}}/api/v1/stores/" + this.store.code + "/devices/" + code;
+        $.ajax({
+          url: url,
+          method: "delete",
+          headers: {
+            uid: uid,
+            token: token,
+            platform: "pc",
+          },
+          contentType: 'application/x-www-form-urlencoded',
+          data: {}
+        }).then(ret => {
+          //console.log(ret);
+          this.listStoredevice();
+          this.$message({
+            message: '删除门店设备类型成功',
+            type: 'success'
+          });
+        })
+      },
+    }
+  }
+</script>
+{{ end }}
