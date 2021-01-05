@@ -38,16 +38,13 @@
       <template slot-scope="scope">
         <el-form label-position="left" inline class="demo-table-expand">
           <el-form-item label="报修人">
-            <span>[[ scope.row.personname ]]</span>
-          </el-form-item>
-          <el-form-item label="联系方式">
-            <span>[[ scope.row.contactway ]]</span>
+            <span>[[ scope.row.base.create_user ]]</span>
           </el-form-item>
           <el-form-item label="报修内容">
-            <span>[[ scope.row.content ]]</span>
+            <span>[[ scope.row.base.content ]]</span>
           </el-form-item>
-          <el-form-item label="报修地址">
-            <span>[[ scope.row.address ]]</span>
+          <el-form-item label="维修工程师">
+            <span>[[ scope.row.base.engineer ]]</span>
           </el-form-item>
           <el-form-item label="相关图片">
             <span>[[ scope.row.pic ]]</span>
@@ -139,22 +136,9 @@
 
 {{ end}}
 
-{{define "main_script"}}
+{{define "script"}}
 <script>
-  function getCookie(cname) {
-    var name = cname + "=";
-    var ca = document.cookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-      var c = ca[i].trim();
-      if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
-    }
-    return "";
-  }
-  uid = getCookie("uid");
-  token = getCookie("token");
-  app = new Vue({
-    el: "#app",
-    delimiters: ['[[', ']]'],
+  var mixin = {
     data: Object.assign({
       websocketDisconnected: false,
       records: [],
@@ -184,10 +168,15 @@
       },
       formLabelWidth: '120px',
       height: null,
+      heightOffset: 50,
+      tableHeight: null,
+      showBackFlag: false,
+      backTitle: "",
       loading: true,
     }),
     mounted: function () {
-
+      uid = this.$cookies.get("uid");
+      token = this.$cookies.get("token")
       this.height = window.innerHeight - this.$refs.multipleTable.$el.offsetTop - 50
       url = "{{.Site.Params.jsonURL}}/api/v1/repairs"
       $.ajax({
@@ -298,6 +287,6 @@
         });
       }
     }
-  })
+  }
 </script>
 {{ end }}

@@ -1,0 +1,88 @@
+<!--
+ * @Description: 
+ * @Version: 
+ * @Company: Dank
+ * @Author: dank.zheng
+ * @Date: 2021-01-04 09:56:40
+ * @LastEditors: dank.zheng
+ * @LastEditTime: 2021-01-05 08:42:10
+-->
+<el-row :gutter="40">
+  <el-col :span="16" :xl="10">
+    <el-row>
+      <!--楼层模块-->
+      <div class="grid-content bg-purple">
+        <p class="pane-title">紧急程度</p>
+        <el-form label-width="80px" :model="repairlevelForm" :rules="repairlevelRules" ref="repairlevelForm"
+          size="mini">
+          <el-form-item label="名称" prop="name">
+            <el-input v-model="repairlevelForm.name" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="最大时间" prop="maxhours">
+            <el-row>
+              <el-col :span="10">
+                <el-radio  v-model="repairlevelForm.maxtypeFlag" label="1" @change="changeMaxTimeFlag">按小时</el-radio>
+                <el-input-number v-model="repairlevelForm.maxhours" :min="1" :max="100" label="最大完成时间" size="mini" :disabled="!repairlevelForm.maxhoursFlag"></el-input-number>
+              </el-col>
+              <el-col :span="10">
+                <el-radio v-model="repairlevelForm.maxtypeFlag" label="2" @change="changeMaxTimeFlag">按天</el-radio><el-input-number v-model="repairlevelForm.maxdays" :min="1" :max="100" label="最大完成时间" :disabled="repairlevelForm.maxhoursFlag"></el-input-number>
+              </el-col>
+            </el-row>
+              
+              
+          </el-form-item>
+          
+          <el-form-item>
+            <el-button type="primary" @click="addRepairlevelForm('repairlevelForm')">添加</el-button>
+          </el-form-item>
+          <el-table :data="repairlevelTableData" tooltip-effect="dark" :height="height" stripe
+          :header-cell-style="{background:'#eef1f6',color:'#606266'}">
+          <el-table-column prop="code" label="编号" width="100"></el-table-column>
+          <el-table-column prop="name" label="名称" min-width="200">
+            <template slot-scope="scope">
+              <span v-if="scope.row.is_set">
+                <el-input size="mini" placeholder="请输入名称" v-model="scope.row.name" autofocus></el-input>
+              </span>
+              <span v-else>[[scope.row.name]]</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="device_type" label="设备类型" min-width="100"></el-table-column>
+          <el-table-column prop="maxnum_str" label="最大时间" min-width="100" sortable>
+            <template slot-scope="scope">
+              <span v-if="scope.row.is_set">
+                <el-input-number v-model="scope.row.maxnums" :min="1" :max="100" label="最大完成时间" size="mini"></el-input-number>
+              </span>
+              <span v-else>[[scope.row.maxnum_str]]</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="160" fixed="right">
+            <template slot-scope="scope">
+              <el-button size="mini" v-if="!scope.row.is_set" icon="el-icon-edit" class="icon-button-edit"
+                @click="repairlevelEdit(scope.$index,scope.row,true)"></el-button>
+              <el-popover placement="top" width="200" trigger="click" :ref="'popover-edit-'+scope.$index" v-else>
+                <p>修改紧急程度类型</p>
+                <div style="text-align: right; margin: 0">
+                  <el-button size="mini" type="text" @click="closePopover(scope.$index,scope.row)">取消</el-button>
+                  <el-button type="primary" size="mini" @click="updateRepairlevelForm(scope.$index,scope.row)">确定</el-button>
+                </div>
+                <el-button size="mini" icon="el-icon-finished" class="icon-button-edit" slot="reference">
+                </el-button>
+              </el-popover>
+              <el-button size="mini" v-if="scope.row.is_set" icon="el-icon-close" class="icon-button-edit"
+                @click="repairlevelEdit(scope.$index,scope.row,false)"></el-button>
+              <el-popover placement="top" title="确认删除吗？" width="200" trigger="click" :ref="'popover-del-'+scope.$index"
+                v-else>
+                <div style="text-align: right; margin: 0">
+                  <el-button size="mini" type="text" @click="closePopover(scope.$index,scope.row)">取消</el-button>
+                  <el-button type="primary" size="mini" @click="deleteRepairlevelForm(scope.$index,scope.row)">确定</el-button>
+                </div>
+                <el-button size="mini" type="danger" icon="el-icon-delete" class="icon-button-delete" slot="reference">
+                </el-button>
+              </el-popover>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </el-row>
+  </el-col>
+</el-row>

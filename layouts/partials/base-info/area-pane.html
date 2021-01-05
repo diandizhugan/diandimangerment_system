@@ -1,0 +1,53 @@
+<!--
+ * @Description: 
+ * @Version: 
+ * @Company: Dank
+ * @Author: dank.zheng
+ * @Date: 2020-12-13 14:51:04
+ * @LastEditors: dank.zheng
+ * @LastEditTime: 2020-12-27 08:52:04
+-->
+<el-form :model="districtForm" :rules="districtRules" ref="districtForm" :inline="true">
+  <el-form-item label="城市名称" :label-width="formLabelWidth" prop="name">
+    <el-input v-model="districtForm.name" autocomplete="off"></el-input>
+  </el-form-item>
+  <el-form-item>
+    <el-button type="primary" @click="addDistrictForm('districtForm')">添加</el-button>
+
+  </el-form-item>
+</el-form>
+<el-table  ref="multipleTable" :data="districtTableData" tooltip-effect="dark" style="width: 600px" :height="height" stripe
+  :header-cell-style="{background:'#eef1f6',color:'#606266'}">
+  <el-table-column prop="first_letter" label="首字母" min-width="100"></el-table-column>
+  <el-table-column prop="name" label="城市名称" min-width="120">
+    <template slot-scope="scope">
+      <span v-if="scope.row.is_set">
+        <el-input size="mini" placeholder="请输入城市名称" v-model="scope.row.name" autofocus></el-input>
+      </span>
+      <span v-else>[[scope.row.name]]</span>
+    </template>
+  </el-table-column>
+  <el-table-column prop="type_name" label="类型" min-width="100"></el-table-column>
+  <el-table-column label="操作" width="120" fixed="right">
+    <template slot-scope="scope">
+      <el-button size="mini" v-if="!scope.row.is_set" icon="el-icon-edit" class="icon-button-edit" @click="districtEdit(scope.$index,scope.row,true)"></el-button>
+      <el-popover placement="top" width="200" trigger="click" :ref="'popover-edit-'+scope.$index" v-else>
+        <p>修改城市名称</p>
+        <div style="text-align: right; margin: 0">
+          <el-button size="mini" type="text" @click="closePopover(scope.$index,scope.row)">取消</el-button>
+          <el-button type="primary" size="mini" @click="updateDistrictForm(scope.$index,scope.row)">确定</el-button>
+        </div>
+        <el-button size="mini" type="danger" icon="el-icon-finished" class="icon-button-edit" slot="reference"></el-button>
+      </el-popover>
+      <el-button size="mini" v-if="scope.row.is_set" icon="el-icon-close" class="icon-button-edit" @click="districtEdit(scope.$index,scope.row,false)"></el-button>
+      <el-popover placement="top" title="确认删除吗？" width="200" trigger="click" :ref="'popover-del-'+scope.$index" v-else>
+        <div style="text-align: right; margin: 0">
+          <el-button size="mini" type="text" @click="closePopover(scope.$index,scope.row)">取消</el-button>
+          <el-button type="primary" size="mini" @click="deleteDistrictForm(scope.$index,scope.row)">确定</el-button>
+        </div>
+        <el-button size="mini" type="danger" icon="el-icon-delete" class="icon-button-delete" slot="reference">
+        </el-button>
+      </el-popover>
+    </template>
+  </el-table-column>
+</el-table>

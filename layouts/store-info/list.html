@@ -28,13 +28,37 @@
   :header-cell-style="{background:'#eef1f6',color:'#606266'}">
   <el-table-column type="selection" width="55">
   </el-table-column>
-  <el-table-column prop="code" label="门店编号" min-width="120" sortable fixed></el-table-column>
-  <el-table-column prop="name" label="门店名称" min-width="200" fixed></el-table-column>
-  <el-table-column prop="addr" label="门店地址" min-width="200"></el-table-column>
-  <el-table-column prop="district" label="地区" min-width="120"></el-table-column>
-  <el-table-column prop="company" label="公司" min-width="120"></el-table-column>
-  <el-table-column prop="area" label="区域" min-width="120"></el-table-column>
-  <el-table-column prop="area" label="故障类型" min-width="120"></el-table-column>
+  <el-table-column prop="name" label="门店信息" min-width="120" fixed>
+    <template slot-scope="scope">
+      <el-popover trigger="hover" placement="top" width="300">
+        <p><span class="title">编 号:</span> [[ scope.row.code]]</p>
+        <p><span class="title">名 称: </span>[[ scope.row.name ]]</p>
+        <p><span class="title">地 址: </span>[[ scope.row.addr ]]</p>
+        <p><span class="title">创建日期: </span>[[ scope.row.created_time]]</p>
+        <p><span class="title">修改日期: </span>[[ scope.row.updateded_time]]</p>
+
+        <div slot="reference" class="name-wrapper">
+          <el-tag type="success" size="medium">[[ scope.row.name ]]</el-tag>
+        </div>
+      </el-popover>
+    </template>
+  </el-table-column>
+  <el-table-column prop="district" label="地区" min-width="120" sortable fixed></el-table-column>
+  <el-table-column prop="company" label="公司" min-width="120" sortable fixed></el-table-column>
+  <el-table-column prop="area_count" label="室内区域" min-width="120">
+    <template slot-scope="scope">
+      [[scope.row.area_count]]
+      <el-button size="mini" type="success" icon="el-icon-edit" class="icon-button-edit"
+      @click="modifyStoreArea(scope.$index, scope.row)"></el-button>
+    </template>
+  </el-table-column>
+  <el-table-column prop="device_count" label="设备类型" min-width="120">
+    <template slot-scope="scope">
+      [[scope.row.device_count]]
+      <el-button size="mini" type="success" icon="el-icon-edit" class="icon-button-edit"
+      @click="modifyDeviceType(scope.$index, scope.row)"></el-button>
+    </template>  
+  </el-table-column>
   <el-table-column prop="repair_num" label="报修单数" min-width="120"></el-table-column>
   <el-table-column prop="leftday" label="剩余天数" width="120" sortable>
     <template slot-scope="scope">
@@ -47,10 +71,6 @@
         </div>
       </el-popover>
     </template>
-  </el-table-column>
-  <el-table-column prop="created_time" label="添加日期" width="200" show-overflow-tooltip sortable>
-  </el-table-column>
-  <el-table-column prop="updated_time" label="修改日期" width="200" show-overflow-tooltip sortable>
   </el-table-column>
   <!--<el-table-column prop="status_cn" label="当前状态" width="120" sortable :filters="statustags"
   :filter-method="filterStatus" filter-placement="bottom-end">
@@ -165,6 +185,7 @@
           trigger: "change"
         }]
       },
+      storeareaForm: {},
       //批量删除对话框弹出
       delAllVisible: false,
       //单行关闭对话框弹出
@@ -173,8 +194,12 @@
       closeForm: {},
       modifyForm: {},
       currentIndex: [],
+      storeareaVisible: false,
       formLabelWidth: '120px',
       height: null,
+      heightOffset: 50,
+      showBackFlag: false,
+      backTitle: "",
     }),
     mounted: function () {
       uid = this.$cookies.get("uid");
@@ -208,7 +233,7 @@
       }).then(ret => {
         this.companies = ret.datas;
       })
-      url = "{{.Site.Params.jsonURL}}/api/v1/districts"
+      url = "{{.Site.Params.jsonURL}}/api/v1/districts/city"
       $.ajax({
         url: url,
         method: "get",
@@ -271,6 +296,16 @@
       },
       filterRecord(value) {
 
+      },
+      modifyStoreArea: function(index,row){
+        //console.log(row);
+        url = "{{.Page.RelPermalink}}/setting/?storecode=" + row.code + "&row=" + index;
+        window.location.replace(url);
+      },
+      modifyDeviceType: function(index,row){
+        //console.log(row);
+        url = "{{.Page.RelPermalink}}/setting/?storecode=" + row.code + "&row=" + index;
+        window.location.replace(url);
       },
       //验证是否能能成功提交对话框
       submitForm(formName) {

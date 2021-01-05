@@ -8,9 +8,9 @@
 <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 98%;" border
   @selection-change="handleSelectionChange" :height="height" stripe
   :header-cell-style="{background:'#eef1f6',color:'#606266'}">
-  <el-table-column prop="code" label="公司编号" min-width="120"></el-table-column>
-  <el-table-column prop="abbr" label="公司缩写" min-width="120"></el-table-column>
-  <el-table-column prop="name" label="公司名称" min-width="200"></el-table-column>
+  <el-table-column prop="code" label="公司编号" min-width="120" fixed></el-table-column>
+  <el-table-column prop="abbr" label="公司缩写" min-width="120" fixed></el-table-column>
+  <el-table-column prop="name" label="公司名称" min-width="200" fixed></el-table-column>
   <el-table-column prop="store_num" label="门店数" min-width="100"></el-table-column>
   <el-table-column prop="user_num" label="人员数" min-width="100"></el-table-column>
   <el-table-column prop="desc" label="备注" min-width="200"></el-table-column>
@@ -19,7 +19,7 @@
   <el-table-column prop="status_cn" label="当前状态" width="120" sortable :filters="statustags"
     :filter-method="filterStatus" filter-placement="bottom-end">
   </el-table-column>
-  <el-table-column label="操作" width="120">
+  <el-table-column label="操作" width="120" fixed="right">
     <template slot-scope="scope">
       <el-button-group>
         <el-button size="mini" type="success" icon="el-icon-edit" class="icon-button-edit"
@@ -89,6 +89,9 @@
       },
       formLabelWidth: '120px',
       height: null,
+      heightOffset: 50,
+      showBackFlag: false,
+      backTitle: "",
     }),
     mounted: function () {
       uid = this.$cookies.get("uid");

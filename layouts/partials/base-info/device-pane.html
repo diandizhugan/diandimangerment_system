@@ -1,0 +1,106 @@
+<!--
+ * @Description: 
+ * @Version: 
+ * @Company: Dank
+ * @Author: dank.zheng
+ * @Date: 2020-12-17 07:53:03
+ * @LastEditors: dank.zheng
+ * @LastEditTime: 2020-12-29 06:52:36
+-->
+<el-row :gutter="40">
+  <el-col :span="14" :xl="10">
+    <div class="grid-content bg-purple">
+      <p class="pane-title">设备信息</p>
+      <el-form label-width="80px" :model="deviceForm" :rules="deviceRules" ref="deviceForm" size="mini">
+        <el-form-item label="设备名称" prop="name">
+          <el-input v-model="deviceForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="设备单位" prop="unit">
+          <el-radio v-for="unit in basesettings.unit.types" :key="unit.key" v-model="deviceForm.unit" :label="unit.key">
+            [[unit.name]]</el-radio>
+        </el-form-item>
+        <el-form-item label="备注" prop="desc">
+          <el-input v-model="deviceForm.desc" type="textarea" :rows="3" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="addDeviceForm('deviceForm')">添加</el-button>
+        </el-form-item>
+      </el-form>
+      <el-table :data="deviceTableData" tooltip-effect="dark" :height="tableHeight" stripe
+        :header-cell-style="{background:'#eef1f6',color:'#606266'}">
+        <el-table-column prop="code" label="编号" min-width="80"></el-table-column>
+        <el-table-column prop="name" label="设备名" min-width="120">
+          <template slot-scope="scope">
+            <span v-if="scope.row.is_set">
+              <el-input size="mini" placeholder="请输入设备名称" v-model="scope.row.name" autofocus>测试</el-input>
+            </span>
+            <span v-else>[[scope.row.name]]</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="unit.name" label="单位" min-width="80">
+          <template slot-scope="scope">
+            <span v-if="scope.row.is_set">
+              <el-select v-model="scope.row.unit_id" placeholder="请选择设备单位" size="mini">
+                <el-option
+                  v-for="unit in basesettings.unit.types"
+                  :key="unit.key"
+                  :label="unit.name"
+                  :value="unit.key">
+                </el-option>
+              </el-select>
+            </span>
+            <span v-else>[[scope.row.unit.name]]</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="desc" label="备注" min-width="100">
+          <template slot-scope="scope">
+            <span v-if="scope.row.is_set">
+              <el-input size="mini" placeholder="请输入设备备注" v-model="scope.row.desc"></el-input>
+            </span>
+            <span v-else>[[scope.row.desc]]</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="160" fixed="right">
+          <template slot-scope="scope">
+            <el-button size="mini" v-if="!scope.row.is_set" icon="el-icon-edit" class="icon-button-edit"
+              @click="deviceEdit(scope.$index,scope.row,true)"></el-button>
+            <el-popover placement="top" width="200" trigger="click" :ref="'popover-edit-'+scope.$index" v-else>
+              <p>修改设备名称</p>
+              <div style="text-align: right; margin: 0">
+                <el-button size="mini" type="text" @click="closePopover(scope.$index,scope.row)">取消</el-button>
+                <el-button type="primary" size="mini" @click="updateDeviceForm(scope.$index,scope.row)">确定</el-button>
+              </div>
+              <el-button size="mini" icon="el-icon-finished" class="icon-button-edit" slot="reference">
+              </el-button>
+            </el-popover>
+            <el-button size="mini" v-if="scope.row.is_set" icon="el-icon-close" class="icon-button-edit"
+              @click="deviceEdit(scope.$index,scope.row,false)"></el-button>
+            <el-popover placement="top" title="确认删除吗？" width="200" trigger="click" :ref="'popover-del-'+scope.$index"
+              v-else>
+              <div style="text-align: right; margin: 0">
+                <el-button size="mini" type="text" @click="closePopover(scope.$index,scope.row)">取消</el-button>
+                <el-button type="primary" size="mini" @click="deleteDeviceForm(scope.$index,scope.row)">确定</el-button>
+              </div>
+              <el-button size="mini" type="danger" icon="el-icon-delete" class="icon-button-delete" slot="reference">
+              </el-button>
+            </el-popover>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+  </el-col>
+  <el-col :span="10">
+    <!--设备单位类型模块-->
+    <div class="grid-content bg-purple">
+      <p class="pane-title">设备单位</p>
+      <el-tag :key="type.key" v-for="type in basesettings.unit.types" closable :disable-transitions="false"
+        @close="deleteBaseSetting('unit',type.key)">
+        [[type.name]]
+      </el-tag>
+      <el-input class="input-new-tag" v-if="basesettings.unit.visible" v-model="basesettings.unit.value" ref="saveTagInput" size="small"
+        @keyup.enter.native="$event.target.blur" @blur="tagConfirm('unit')">
+      </el-input>
+      <el-button v-else class="button-new-tag" size="small" @click="showTagInput('unit')">+ 添加设备类型</el-button>
+    </div>
+  </el-col>
+</el-row>

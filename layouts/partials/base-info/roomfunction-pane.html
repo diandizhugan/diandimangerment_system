@@ -1,0 +1,41 @@
+<!--
+ * @Description: 
+ * @Version: 
+ * @Company: Dank
+ * @Author: dank.zheng
+ * @Date: 2020-12-28 11:32:21
+ * @LastEditors: dank.zheng
+ * @LastEditTime: 2021-01-04 20:52:32
+-->
+<el-row :gutter="40">
+  <el-col :span="10" :xl="6">
+    <el-row>
+      <!--楼层模块-->
+      <div class="grid-content bg-purple">
+        <p class="pane-title">楼层信息</p>
+        <el-tag :key="floor.key" v-for="floor in basesettings.floor.types" closable :disable-transitions="false"
+          @close="deleteBaseSetting('floor',floor.key)">
+          [[floor.name]]
+        </el-tag>
+        <el-input class="input-new-tag" v-if="basesettings.floor.visible" v-model="basesettings.floor.value"
+          ref="saveTagInput" size="small" @keyup.enter.native="$event.target.blur" @blur="tagConfirm('floor')">
+        </el-input>
+        <el-button v-else class="button-new-tag" size="small" @click="showTagInput('floor')">+ 添加楼层信息</el-button>
+      </div>
+    </el-row>
+    <el-row>
+      <!--楼层模块-->
+      <div class="grid-content bg-purple">
+        <p class="pane-title">功能区信息</p>
+        <el-tag :key="area.key" v-for="area in basesettings.areafunction.types" closable :disable-transitions="false"
+          @close="deleteBaseSetting('areafunction',area.key)">
+          [[area.name]]
+        </el-tag>
+        <el-input class="input-new-tag" v-if="basesettings.areafunction.visible" v-model="basesettings.areafunction.value"
+          ref="saveTagInput" size="small" @keyup.enter.native="$event.target.blur" @blur="tagConfirm('areafunction')">
+        </el-input>
+        <el-button v-else class="button-new-tag" size="small" @click="showTagInput('areafunction')">+ 添加功能区信息</el-button>
+      </div>
+    </el-row>
+  </el-col>
+</el-row>
