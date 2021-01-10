@@ -5,7 +5,7 @@
  * @Author: dank.zheng
  * @Date: 2020-10-26 07:35:17
  * @LastEditors: dank.zheng
- * @LastEditTime: 2021-01-04 07:32:00
+ * @LastEditTime: 2021-01-10 10:51:28
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -47,15 +47,15 @@
           <el-col :span="4" style="text-align: right;">
             <i class="el-icon-bell"></i>
             <el-avatar class="md_headpic" :size="50"
-              src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png">
+              :src="userlogo">
             </el-avatar>
-            <el-dropdown :hide-on-click="false">
+            <el-dropdown :hide-on-click="false" @command="rightDropdown">
               <span class="el-dropdown-link">
-                郑罡<i class="el-icon-arrow-down el-icon--right"></i>
+                [[ username ]]<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>编辑信息</el-dropdown-item>
-                <el-dropdown-item>退出</el-dropdown-item>
+                <el-dropdown-item command="editinfo">编辑信息</el-dropdown-item>
+                <el-dropdown-item command="logout">退出</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-col>
@@ -76,15 +76,18 @@
         activeIndex2: a,
         activeIndex3: "",
         username: "",
+        userlogo: "",
         circulUrl: "",
         obj: {},
       },
       mounted: function () {
-        this.height = window.innerHeight - this.$refs.multipleTable.$el.offsetTop - this.heightOffset;
+        if (this.$refs.multipleTable != null) {
+          this.height = window.innerHeight - this.$refs.multipleTable.$el.offsetTop - this.heightOffset;
+        }
         this.$cookies.set("historypage", "{{ .Page.Permalink }}");
         token = this.$cookies.get("token");
         uid = this.$cookies.get("uid");
-        //console.log(token);
+        console.log(token);
         if (token == null || token == "") {
           window.location.replace("/");
         } else {
@@ -100,7 +103,12 @@
             }
           }).then(ret => {
             if (ret.code == 200) {
-              this.username = ret.datas.username;
+              this.username = ret.datas.name;
+              if (ret.datas.avatarurl == "") {
+                this.userlogo = "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png";
+              } else {
+                this.userlogo = ret.datas.avatarurl;
+              }
             }
             if (ret.code != 200) {
               window.location.replace("/");
@@ -108,7 +116,7 @@
             }
           })
         }
-  
+
       },
       methods: {
         handleSelect(key, keyPath) {
@@ -117,6 +125,13 @@
         },
         handleRightSelect(key, keyPath) {
           window.location.replace(key);
+        },
+        rightDropdown(command){
+          if(command == "logout"){
+            this.$cookies.remove("token");
+            this.$cookies.remove("uid");
+            window.location.replace("/");
+          }
         }
       }
     })

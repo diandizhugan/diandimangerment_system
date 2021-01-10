@@ -2,27 +2,27 @@
 <el-row :gutter="12" style="padding-top:50px">
   <el-col :span="3" :offset="2">
     <el-card shadow="always" :body-style="{background:'#abcdef',color:'#7a8a9a'}">
-      受理中：[[ countdatas.created]]
+      待受理：[[ countdatas.created]]
+    </el-card>
+  </el-col>
+  <el-col :span="3" :offset="2">
+    <el-card shadow="always" :body-style="{background:'#abcdef',color:'#7a8a9a'}">
+      待分派：[[ countdatas.accepted]]
     </el-card>
   </el-col>
   <el-col :span="3">
     <el-card shadow="always" :body-style="{background:'#bedcaf',color:'#7a8a9a'}">
-      分派中：[[ countdatas.accepted]]
+      待维修：[[ countdatas.assigned]]
     </el-card>
   </el-col>
   <el-col :span="3">
     <el-card shadow="always" :body-style="{background:'#cafedb',color:'#7a8a9a'}">
-      维修中: [[ countdatas.assigned]]
+      待验收: [[ countdatas.serviced]]
     </el-card>
   </el-col>
   <el-col :span="3">
     <el-card shadow="always" :body-style="{background:'#abcdef',color:'#7a8a9a'}">
-      验收中: [[ countdatas.serviced]]
-    </el-card>
-  </el-col>
-  <el-col :span="3">
-    <el-card shadow="always" :body-style="{background:'#abcdef',color:'#7a8a9a'}">
-      已完成: [[ countdatas.confirmed + countdatas.finished]]
+      已完成: [[ countdatas.confirmed]]
     </el-card>
   </el-col>
   <el-col :span="3">
@@ -33,29 +33,20 @@
 </el-row>
 {{ end }}
 
-{{ define "main_script"}}
+{{ define "script"}}
 <script>
-  function getCookie(cname) {
-    var name = cname + "=";
-    var ca = document.cookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-      var c = ca[i].trim();
-      if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
-    }
-    return "";
-  }
-  uid = getCookie("uid");
-  token = getCookie("token");
-  app = new Vue({
-    el: "#app",
-    delimiters: ['[[', ']]'],
-    data() {
-      return {
-        countdatas: [],
-      };
-    },
+  var mixin = {
+    data: Object.assign({
+        countdatas: {},
+        heightOffset: 200,
+        tableHeight: null,
+        showBackFlag: false,
+        backTitle: "",
+    }),
     mounted: function () {
-      url = "{{.Site.Params.jsonURL}}/api/v1/repairs/count"
+      uid = this.$cookies.get("uid");
+      token = this.$cookies.get("token");
+      url = "{{.Site.Params.jsonURL}}/api/v1/repairs"
       $.ajax({
         url: url,
         method: "get",
@@ -65,11 +56,15 @@
           "token": token,
           "platform": "pc",
         },
-        data: {},
+        data: {
+          "onlycount": "true",
+          "stepcode": "all",
+        },
       }).then(ret => {
-        this.countdatas = ret.datas;
+        this.countdatas = ret.datas.count.steps_num;
       })
+     
     },
-  })
+  }
 </script>
 {{ end }}
